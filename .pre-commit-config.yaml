@@ -20,16 +20,16 @@ repos:
     hooks:
       - id: isort
         name: ISort
-        entry: python -m isort .  # Default Env setup
-        # entry: pipenv run python -m isort .  # Pipenv setup
+        # entry: python -m isort .  # Default Env setup
+        entry: pipenv run python -m isort .  # Pipenv setup
         # entry: poetry run python -m isort .  # Poetry setup
         language: system
         types: [python]
         require_serial: true
       - id: flake8
         name: Flake8
-        entry: python -m flake8  # Default Env setup
-        # entry: pipenv run python -m flake8  # Pipenv setup
+        # entry: python -m flake8  # Default Env setup
+        entry: pipenv run python -m flake8  # Pipenv setup
         # entry: poetry run python -m flake8  # Poetry setup
         language: system
         types: [python]

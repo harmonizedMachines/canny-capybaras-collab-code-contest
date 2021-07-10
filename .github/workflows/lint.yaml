@@ -47,22 +47,22 @@ jobs:
       # Uncomment the step that matches your setup.
 
       # Default Env setup
-      - name: Run hooks through our requirement file
+      # - name: Run hooks through our requirement file
+      #   run: |
+      #     pip install -r dev-requirements.txt
+      #     pre-commit run --all-files
+      #   env:
+      #     # Force pre-commit to do a system install.
+      #     PIP_USER: 0
+
+        # Pipenv setup
+      - name: Run hooks through our Pipenv environment.
         run: |
-          pip install -r dev-requirements.txt
-          pre-commit run --all-files
+          pipenv install --system --dev
+          pipenv run python -m pre-commit run --all-files
         env:
           # Force pre-commit to do a system install.
           PIP_USER: 0
-
-        # Pipenv setup
-        # - name: Run hooks through our Pipenv environment.
-        #  run: |
-        #    pipenv install --system --dev
-        #    pipenv run python -m pre-commit run --all-files
-        #  env:
-        #    # Force pre-commit to do a system install.
-        #    PIP_USER: 0
 
         # Poetry setup
         # - name: Run hooks through our Poetry environment.
