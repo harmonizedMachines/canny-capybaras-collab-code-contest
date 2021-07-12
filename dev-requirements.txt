@@ -15,3 +15,4 @@ flake8-isort~=4.0
 
 # Project packages
 scrapy==2.5.0
+windows-curses~=2.2
