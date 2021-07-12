@@ -37,7 +37,7 @@ def crawl(start, finish, file_format='json', save_path=""):
             self.file_format = file_format
 
         def start_requests(self):
-            for i in range(self.start, self.finish):
+            for i in range(self.start, self.finish+1):
                 yield scrapy.Request(url=self.start_url + str(i), callback=self.parse)
 
         def parse(self, response):
