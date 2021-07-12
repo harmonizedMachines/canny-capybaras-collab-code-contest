@@ -38,7 +38,7 @@ class Comic(object):
         self.image_url = image_url
 
 
-def crawl(mode,list_=[], start=None, end=None, file_format='json', save_path="."):
+def crawl(user_input, file_format='json', save_path="."):
     """
     mode : list, must define the :param 'list_' with a list
     mode : range, must define the :param 'start' and the :param 'end' with integers
@@ -46,44 +46,35 @@ def crawl(mode,list_=[], start=None, end=None, file_format='json', save_path="."
     :param save_path , in working directory by default, can by change by a str path
     """
     comics_objs = Container()  # creation of a Container
+
+    user_input = user_input.split(',')
+    for input in user_input:
+        if '-' in input:
+            split_input = input.split('-')
+            user_input = [*user_input,*range(int(split_input[0]),int(split_input[1])+1)]
+            user_input.remove(input)
+    user_input = [int(input) for input in user_input]
+
     class XKCDSpider(scrapy.Spider):
         name = "xkcd_spider"
 
-        def __init__(self, start, end, save_path, file_format, mode, list_, **kwargs):
+        def __init__(self, user_input, save_path, file_format, **kwargs):
             super().__init__(**kwargs)
             self.start_url = 'https://xkcd.com/'
-            self.start = start
-            self.end = end
+            self.user_input = user_input
             self.save_path = save_path
             self.file_format = file_format
-            self.list_ = list_
-            self.mode = mode
 
         def start_requests(self):
-            if self.mode == "range":
-                if self.start is not None and self.end is not None:
-                    os.chdir(self.save_path)
-                    time = datetime.now().strftime("%d_%m_%Y_%H-%M-%S")
-                    os.mkdir(time)
-                    os.chdir(time)
-                    for i in range(self.start, self.end+1):
-                        yield scrapy.Request(url=self.start_url + str(i), callback=self.parse)
-                else:
-                    raise ValueError("If range mode selected, you must define 'start' and 'end' parameters")
-            elif self.mode == "list":
-                if self.list_:
-                    os.chdir(self.save_path)
-                    time = datetime.now().strftime("%d_%m_%Y_%H-%M-%S")
-                    os.mkdir(time)
-                    os.chdir(time)
-                    for i in self.list_:
-                        yield scrapy.Request(url=self.start_url + str(i), callback=self.parse)
-                else:
-                    raise ValueError("If list mode selected, you must define 'list_' parameter")
+            os.chdir(self.save_path)
+            time = datetime.now().strftime("%d_%m_%Y_%H-%M-%S")
+            os.mkdir(time)
+            os.chdir(time)
+            for i in self.user_input:
+                yield scrapy.Request(url=self.start_url + str(i), callback=self.parse)
 
 
         def parse(self, response):
-            global ended
             page = response.url.split("/")[-2]
             # extract title
             title = response.xpath('//div[@id="ctitle"]/text()').extract()[0]
@@ -119,10 +110,10 @@ def crawl(mode,list_=[], start=None, end=None, file_format='json', save_path="."
             os.chdir("..\\")
 
     process = CrawlerProcess()
-    process.crawl(XKCDSpider,mode=mode,list_=list_, start=start, end=end, file_format=file_format, save_path=save_path)
+    process.crawl(XKCDSpider,user_input=user_input, file_format=file_format, save_path=save_path)
     process.start()
     return comics_objs
 
 
 if __name__ == "__main__":
-    print(crawl(mode="range", start=8,end=9,file_format="json").titles)
+    print(crawl(user_input='5,7,10-15',file_format="json").titles)
