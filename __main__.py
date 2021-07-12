@@ -125,6 +125,17 @@ def draw_input_window(screen: curses.window, height: int, width: int, y: int, x:
     add_str_color(input_win, 2, len(output_type_text) + 2, "JSON", ColorPair.blue_on_black)
 
 
+def draw_status_bar(screen: curses.window, height: int, width: int):
+    statusbartext = "Press 'q' to exit | STATUS BAR"
+    add_str_color(screen, height - 1, 0, statusbartext, ColorPair.black_on_white)
+    add_str_color(screen, height - 1, len(statusbartext), " " * (width - len(statusbartext) -1), ColorPair.black_on_white)
+    
+    screen.attron(curses.color_pair(1))
+    screen.insch(height - 1, width - 1, " ") #using insch so doesn't wrap and cause error
+    screen.attroff(curses.color_pair(3))
+    
+
+
 def draw_menu(screen: curses.window) -> None:
     """Draws the entire menu"""
     sh, sw = screen.getmaxyx()
@@ -132,8 +143,9 @@ def draw_menu(screen: curses.window) -> None:
     bottom_win_height = sh - 2
     output_win_width = sw // 2 + 25
     input_win_width = sw - output_win_width + 1
-    draw_output_window(screen, bottom_win_height, output_win_width, 2, 0)
-    draw_input_window(screen, bottom_win_height, input_win_width, 2, output_win_width - 1)
+    draw_output_window(screen, bottom_win_height - 1, output_win_width, 2, 0)
+    draw_input_window(screen, bottom_win_height - 1, input_win_width, 2, output_win_width - 1)
+    draw_status_bar(screen, sh, sw)
 
 
 def resize_handler(screen: curses.window) -> None:
