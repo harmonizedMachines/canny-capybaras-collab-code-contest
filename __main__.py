@@ -125,15 +125,26 @@ def draw_input_window(screen: curses.window, height: int, width: int, y: int, x:
     add_str_color(input_win, 2, len(output_type_text) + 2, "JSON", ColorPair.blue_on_black)
 
 
-def draw_status_bar(screen: curses.window, height: int, width: int):
-    statusbartext = "Press 'q' to exit | STATUS BAR"
-    add_str_color(screen, height - 1, 0, statusbartext, ColorPair.black_on_white)
-    add_str_color(screen, height - 1, len(statusbartext), " " * (width - len(statusbartext) -1), ColorPair.black_on_white)
-    
-    screen.attron(curses.color_pair(1))
-    screen.insch(height - 1, width - 1, " ") #using insch so doesn't wrap and cause error
-    screen.attroff(curses.color_pair(3))
-    
+def draw_status_bar(screen: curses.window, height: int, width: int) -> None:
+    """
+    Draws the status bar at the bottom of the screen
+
+    Parameters:
+    screen : curses.window
+        The parent window of the status bar
+    height : int
+        The height of the status bar
+    width : int
+        The width of the status bar
+    """
+    status_bar_text = "Press 'q' to exit | STATUS BAR"
+    whitespace_width = " " * (width - len(status_bar_text) - 1)
+    add_str_color(screen, height - 1, 0, status_bar_text, ColorPair.black_on_white)
+    add_str_color(screen, height - 1, len(status_bar_text), whitespace_width, ColorPair.black_on_white)
+
+    screen.attron(curses.color_pair(ColorPair.black_on_white.value))
+    screen.insch(height - 1, width - 1, " ")  # using insch so doesn't wrap and cause error
+    screen.attroff(curses.color_pair(ColorPair.black_on_white.value))
 
 
 def draw_menu(screen: curses.window) -> None:
