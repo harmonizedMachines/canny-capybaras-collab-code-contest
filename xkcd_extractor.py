@@ -68,4 +68,5 @@ def crawl(start, finish, file_format='json', save_path=""):
     process.start()
     return comics_objs
 
-print(crawl(8,9).titles)
+if __name__ == "__main__":
+    print(crawl(8,9).titles)
