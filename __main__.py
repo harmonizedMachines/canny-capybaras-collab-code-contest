@@ -1,5 +1,9 @@
 import curses
+import threading
+import time
 from enum import Enum
+
+import psutil
 
 
 class ColorPair(Enum):
@@ -125,28 +129,6 @@ def draw_input_window(screen: curses.window, height: int, width: int, y: int, x:
     add_str_color(input_win, 2, len(output_type_text) + 2, "JSON", ColorPair.blue_on_black)
 
 
-def draw_status_bar(screen: curses.window, height: int, width: int) -> None:
-    """
-    Draws the status bar at the bottom of the screen
-
-    Parameters:
-    screen : curses.window
-        The parent window of the status bar
-    height : int
-        The height of the status bar
-    width : int
-        The width of the status bar
-    """
-    status_bar_text = "Press 'q' to exit | STATUS BAR"
-    whitespace_width = " " * (width - len(status_bar_text) - 1)
-    add_str_color(screen, height - 1, 0, status_bar_text, ColorPair.black_on_white)
-    add_str_color(screen, height - 1, len(status_bar_text), whitespace_width, ColorPair.black_on_white)
-
-    screen.attron(curses.color_pair(ColorPair.black_on_white.value))
-    screen.insch(height - 1, width - 1, " ")  # using insch so doesn't wrap and cause error
-    screen.attroff(curses.color_pair(ColorPair.black_on_white.value))
-
-
 def draw_menu(screen: curses.window) -> None:
     """Draws the entire menu"""
     sh, sw = screen.getmaxyx()
@@ -156,7 +138,42 @@ def draw_menu(screen: curses.window) -> None:
     input_win_width = sw - output_win_width + 1
     draw_output_window(screen, bottom_win_height - 1, output_win_width, 2, 0)
     draw_input_window(screen, bottom_win_height - 1, input_win_width, 2, output_win_width - 1)
-    draw_status_bar(screen, sh, sw)
+
+
+def draw_status_bar(screen: curses.window) -> None:
+    """
+    Draws the status bar at the bottom of the screen
+
+    Parameters:
+    screen : curses.window
+        The parent window of the status bar
+    """
+    sh, sw = screen.getmaxyx()
+    cpu_percent = psutil.cpu_percent()
+    status_bar_text = f"Press 'q' to exit | STATUS BAR | CPU Usage: {cpu_percent}%"
+    whitespace_width = " " * (sw - len(status_bar_text) - 1)
+    add_str_color(screen, sh - 1, 0, status_bar_text, ColorPair.black_on_white)
+    add_str_color(screen, sh - 1, len(status_bar_text), whitespace_width, ColorPair.black_on_white)
+
+    screen.attron(curses.color_pair(ColorPair.black_on_white.value))
+    screen.insch(sh - 1, sw - 1, " ")  # using insch so doesn't wrap and cause error
+    screen.attroff(curses.color_pair(ColorPair.black_on_white.value))
+
+
+def draw_status_bar_continuously(screen: curses.window, delay: float) -> None:
+    """
+    Draws the status bar on the screen and refreshes the screen continously with a delay
+
+    Parameters:
+    screen : curses.window
+        The parent window of the status bar
+    delay : float
+        The delay in seconds before the status bar is drawn again
+    """
+    while True:
+        draw_status_bar(screen)
+        screen.refresh()
+        time.sleep(delay)
 
 
 def resize_handler(screen: curses.window) -> None:
@@ -183,8 +200,12 @@ def main(screen: curses.window) -> None:
     curses.mousemask(curses.BUTTON1_RELEASED)
     initialize_colors()
     draw_menu(screen)
+    status_bar_thread = threading.Thread(target=draw_status_bar_continuously, args=(screen, 0.5))
+    status_bar_thread.daemon = True
+    status_bar_thread.start()
 
     while True:
+        draw_status_bar(screen)
         ch = screen.getch()
         if ch == curses.KEY_RESIZE:
             curses.curs_set(0)
