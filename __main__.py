@@ -4,7 +4,7 @@ import time
 
 import psutil
 
-from buttons import CyclableButton
+from buttons import CyclableButton, EditableButton
 from color_pair import ColorPair
 from curses_utils import add_str_color
 
@@ -40,7 +40,8 @@ class App():
     """
 
     file_format_button = CyclableButton(["JSON", "CSV"])
-    buttons = [file_format_button]
+    comic_id_button = EditableButton()
+    buttons = [file_format_button, comic_id_button]
 
     def start(self) -> None:
         """Starts the application"""
@@ -75,6 +76,9 @@ class App():
                     self.draw_menu(screen)
             elif ch == ord('q'):
                 return
+            else:
+                self.comic_id_button.next_charachter(ch)
+                self.draw_menu(screen)
 
     def initialize_colors(self) -> None:
         """Initializes each color pair"""
@@ -188,7 +192,15 @@ class App():
 
         comic_id_text = "Comic ID(s):"
         input_win.addstr(1, 1, comic_id_text)
-        add_str_color(input_win, 1, len(comic_id_text) + 2, "1", ColorPair.red_on_black)
+        numbers = self.comic_id_button.text
+        add_str_color(input_win, 1, len(comic_id_text) + 2, numbers, ColorPair.red_on_black)
+
+        self.comic_id_button.set_bounding_box(
+            1 + y,
+            len(comic_id_text) + x - 1,
+            1 + y,
+            len(comic_id_text) + len(numbers) + x + 1
+        )
 
         output_type_text = "File Format:"
         input_win.addstr(2, 1, output_type_text)

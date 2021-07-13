@@ -5,7 +5,6 @@ from typing import List
 class Button(ABC):
     """
     Class that handles clickable bounding boxes
-
     Attributes:
     top_left_y : int
         The absolute top left y position of the button's bounding box
@@ -25,7 +24,7 @@ class Button(ABC):
         self.bottom_right_x = bottom_right_x
 
     def try_click(self, mouse_y: int, mouse_x: int) -> None:
-        """Attempts to click the button by first checking if the mouse intersects with the butotn"""
+        """Attempts to click the button by first checking if the mouse intersects with the button"""
         if self.is_intersecting(mouse_y, mouse_x):
             self.on_click()
 
@@ -42,7 +41,6 @@ class Button(ABC):
 class CyclableButton(Button):
     """
     Variant of the button class that cycles through a list of set options each time it is clicked
-
     Attributes:
     options : list[str]
         The list of options that the button can cycle through
@@ -66,3 +64,36 @@ class CyclableButton(Button):
     def get_current_option(self) -> str:
         """Gets the currently select option in the list of options"""
         return self.options[self.current_option_index]
+
+
+class EditableButton(Button):
+    """
+    Variant of the button class that allows you to edit text
+
+    Attributes:
+    options : list[str]
+        The list of options that the button can cycle through
+    current_option_index : int
+        The index of the currently selected options
+        Starts at 0
+    """
+    def __init__(self):
+        self.editing = False
+        self.text = "1"
+
+    def on_click(self) -> None:
+        """Called when the button is clicked"""
+        self.editing = True
+
+    def get_current_option(self) -> str:
+        """Gets the currently shown option"""
+        return self.text
+
+    def next_charachter(self, ascii_code: int) -> None:
+        if self.editing:
+            if ascii_code == 8:
+                self.text = self.text[:-1]
+            elif ascii_code == 10:
+                self.editing = False
+            else:
+                self.text += chr(ascii_code)
