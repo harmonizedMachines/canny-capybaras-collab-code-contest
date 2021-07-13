@@ -229,7 +229,7 @@ def check_collision(mouse_x: int, mouse_y: int) -> None:
     """
     button = SettingButtons.file_format_pos
     if button[1] <= mouse_x <= button[3]:
-        if button[0] <= mouse_y <= button[1]:
+        if button[0] <= mouse_y <= button[2]:
             SettingButtons.file_format_value += 1
             if SettingButtons.file_format_value > len(SettingButtons.file_formats) - 1:
                 SettingButtons.file_format_value = SettingButtons.file_format_value - len(SettingButtons.file_formats)
