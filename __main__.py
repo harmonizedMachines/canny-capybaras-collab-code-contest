@@ -28,7 +28,7 @@ class SettingButtons:
         index 0 = top left y
         index 1 = top left x
         index 2 = bottom right y
-        index 3 = bottom right y
+        index 3 = bottom right x
     file_formats : list
         Contains the available file formats that can be cycled through
     file_format_value : int
@@ -38,7 +38,7 @@ class SettingButtons:
         index 0 = top left y
         index 1 = top left x
         index 2 = bottom right y
-        index 3 = bottom right y
+        index 3 = bottom right x
     comic_id_value : string [Currently unused]
         Contains the comic id(s) that the user wants to scrape
     """
