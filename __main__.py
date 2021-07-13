@@ -170,6 +170,7 @@ def draw_input_window(screen: curses.window, height: int, width: int, y: int, x:
 
 def draw_menu(screen: curses.window) -> None:
     """Draws the entire menu"""
+    screen.clear()
     sh, sw = screen.getmaxyx()
     draw_title_window(screen, 3, sw, 0, 0)
     bottom_win_height = sh - 2
@@ -177,6 +178,7 @@ def draw_menu(screen: curses.window) -> None:
     input_win_width = sw - output_win_width + 1
     draw_output_window(screen, bottom_win_height - 1, output_win_width, 2, 0)
     draw_input_window(screen, bottom_win_height - 1, input_win_width, 2, output_win_width - 1)
+    draw_status_bar(screen)
 
 
 def draw_status_bar(screen: curses.window) -> None:
@@ -213,18 +215,6 @@ def draw_status_bar_continuously(screen: curses.window, delay: float) -> None:
         draw_status_bar(screen)
         screen.refresh()
         time.sleep(delay)
-
-
-def resize_handler(screen: curses.window) -> None:
-    """
-    Called when the terminal is resized
-
-    Parameters:
-    screen : curses.window
-        The main window
-    """
-    screen.clear()
-    draw_menu(screen)
 
 
 def check_collision(mouse_x: int, mouse_y: int) -> None:
@@ -265,12 +255,12 @@ def main(screen: curses.window) -> None:
         ch = screen.getch()
         if ch == curses.KEY_RESIZE:
             curses.curs_set(0)
-            resize_handler(screen)
+            draw_menu(screen)
         elif ch == curses.KEY_MOUSE:
             _, mouse_x, mouse_y, _, mouse_state = curses.getmouse()
             if not mouse_state:
                 check_collision(mouse_x, mouse_y)
-                resize_handler(screen)
+                draw_menu(screen)
         elif ch == ord('q'):
             return
 
