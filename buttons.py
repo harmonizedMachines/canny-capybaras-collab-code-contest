@@ -1,8 +1,7 @@
-from abc import ABC, abstractmethod
 from typing import List
 
 
-class Button(ABC):
+class Button():
     """
     Class that handles clickable bounding boxes
 
@@ -24,16 +23,21 @@ class Button(ABC):
         self.bottom_right_y = bottom_right_y
         self.bottom_right_x = bottom_right_x
 
-    def try_click(self, mouse_y: int, mouse_x: int) -> None:
-        """Attempts to click the button by first checking if the mouse intersects with the button"""
+    def try_click(self, mouse_y: int, mouse_x: int) -> bool:
+        """
+        Attempts to click the button by first checking if the mouse intersects with the button
+
+        Returns True if it was successful
+        """
         if self.is_intersecting(mouse_y, mouse_x):
             self.on_click()
+            return True
+        return False
 
     def is_intersecting(self, y: int, x: int) -> bool:
         """Checks if the coordinates intersect the button's bounding box"""
         return self.top_left_y <= y <= self.bottom_right_y and self.top_left_x <= x <= self.bottom_right_x
 
-    @abstractmethod
     def on_click(self) -> None:
         """Called when the button is clicked"""
         pass

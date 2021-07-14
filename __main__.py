@@ -4,7 +4,8 @@ import time
 
 import psutil
 
-from buttons import CyclableButton, EditableButton
+import xkcd_extractor
+from buttons import Button, CyclableButton, EditableButton
 from color_pair import ColorPair
 from curses_utils import add_str_color
 
@@ -42,7 +43,12 @@ class App():
     file_format_button = CyclableButton(["JSON", "CSV"])
     start_button = CyclableButton(["START", "STOP"])
     comic_id_button = EditableButton()
-    buttons = [file_format_button, comic_id_button, start_button]
+    next_button = Button()
+    back_button = Button()
+    buttons = [file_format_button, comic_id_button, start_button, next_button, back_button]
+
+    comic_results = None
+    comic_results_index = 0
 
     def start(self) -> None:
         """Starts the application"""
@@ -74,19 +80,25 @@ class App():
                 _, mouse_x, mouse_y, _, mouse_state = curses.getmouse()
                 if not mouse_state:
                     for button in self.buttons:
-                        button.try_click(mouse_y, mouse_x)
+                        if not button.try_click(mouse_y, mouse_x):
+                            continue
+                        if button == self.start_button:
+                            if self.start_button.get_current_option() == "STOP":
+                                self.draw_menu(screen)
+                                self.comic_results = xkcd_extractor.crawl(self.comic_id_button.text)
+                            else:
+                                self.comic_results = []
+                                self.comic_results_index = 0
+                        elif button == self.next_button:
+                            self.comic_results_index = (self.comic_results_index + 1) % len(self.comic_results.comics)
+                        elif button == self.back_button:
+                            self.comic_results_index = (self.comic_results_index - 1) % len(self.comic_results.comics)
                     self.draw_menu(screen)
             elif ch == ord('q'):
                 return
             else:
                 self.comic_id_button.next_character(ch)
                 self.draw_menu(screen)
-
-                if self.start_button.get_current_option() == "STOP":
-                    '''
-                    start xkcd scraper
-                    '''
-                    pass
 
     def initialize_colors(self) -> None:
         """Initializes each color pair"""
@@ -167,18 +179,51 @@ class App():
         output_win = screen.subwin(height, width, y, x)
         output_win.border(0, 0, 0, 0, curses.ACS_SSSB)
 
-        output_win.addstr(1, 1, "ID: N/A")
-        output_win.addstr(2, 1, "Title: N/A")
-        output_win.addstr(3, 1, "Caption: N/A")
-        output_win.addstr(4, 1, "Image URL: N/A")
+        if self.comic_results:
+            page_id = self.comic_results.pages[self.comic_results_index]
+            title = self.comic_results.titles[self.comic_results_index]
+            alt_text = self.comic_results.scripts[self.comic_results_index]
+            comic_url = self.comic_results.comic_urls[self.comic_results_index]
+            image_url = self.comic_results.image_urls[self.comic_results_index]
+        else:
+            page_id = "N/A"
+            title = "N/A"
+            alt_text = "N/A"
+            comic_url = "N/A"
+            image_url = "N/A"
+        output_win.addstr(1, 1, f"ID: {page_id}")
+        output_win.addstr(2, 1, f"Title: {title}")
+        output_win.addstr(3, 1, f"Alt Text: {alt_text}")
+        output_win.addstr(4, 1, f"Comic URL: {comic_url}")
+        output_win.addstr(5, 1, f"Image URL: {image_url}")
 
-        add_str_color(output_win, height - 2, 1, "Back", ColorPair.black_on_white)
-        num_results_text = "0/0 Results"
+        if not self.comic_results:
+            num_results_text = "0/0 Results"
+        else:
+            num_results = len(self.comic_results.comics)
+            num_results_text = f"{self.comic_results_index + 1}/{num_results} Results"
 
         output_win.addstr(height - 2, width // 2 - len(num_results_text) // 2, num_results_text)
 
         next_text = "Next"
-        add_str_color(output_win, height - 2, width - len(next_text) - 1, next_text, ColorPair.black_on_white)
+        back_text = "Back"
+        next_x = width - len(next_text) - 1
+        back_x = 1
+        add_str_color(output_win, height - 2, next_x, next_text, ColorPair.black_on_white)
+        add_str_color(output_win, height - 2, back_x, "Back", ColorPair.black_on_white)
+
+        self.next_button.set_bounding_box(
+            height,
+            next_x,
+            height,
+            next_x + len(next_text)
+        )
+        self.back_button.set_bounding_box(
+            height,
+            back_x,
+            height,
+            back_x + len(back_text)
+        )
 
     def draw_input_window(self, screen: curses.window, height: int, width: int, y: int, x: int) -> None:
         """

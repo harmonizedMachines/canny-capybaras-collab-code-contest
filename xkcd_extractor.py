@@ -1,9 +1,13 @@
-import scrapy
-from scrapy.crawler import CrawlerProcess
-import json
+# Temporary:
+# flake8: noqa
+
 import csv
+import json
 import os
 from datetime import datetime
+
+import scrapy
+from scrapy.crawler import CrawlerProcess
 
 
 class Container(object):
@@ -14,8 +18,11 @@ class Container(object):
     """
     def __init__(self):
         self.comics = []
+        self.pages = []
         self.titles = []
+        self.scripts = []
         self.image_urls = []
+        self.comic_urls = []
         self.lastest_comic = ""
 
     def append(self, comic):
@@ -25,8 +32,11 @@ class Container(object):
 
         """
         self.comics.append(comic)
+        self.pages.append(comic.page)
         self.titles.append(comic.title)
+        self.scripts.append(comic.script)
         self.image_urls.append(comic.image_url)
+        self.comic_urls.append(comic.comic_url)
 
     def lc(self,lastest_comic):
         self.lastest_comic = lastest_comic
@@ -36,10 +46,12 @@ class Comic(object):
     """
     Custom object that store the title, scripts and the image_url of a comic
     """
-    def __init__(self, title,script,image_url):
+    def __init__(self, page,title,script,image_url,comic_url):
+        self.page = page
         self.title = title
         self.script = script
         self.image_url = image_url
+        self.comic_url = comic_url
 
 
 def crawl(user_input, file_format='json', save_path="."):
@@ -97,21 +109,21 @@ def crawl(user_input, file_format='json', save_path="."):
                 image_url,script = "https://uniim1.shutterfly.com/render/00-vOZRc1W66JnxNvciJy8U4krEZhJw8T6sbQ90aYWJRTIu1xZykVtCbeNYqPr02Q1KldMTLfbtJ__wYVBQ_4iTow?cn=THISLIFE&res=small",""
                 print("Found a build-yourself comic, empty script and image_url")
             # export to file
-            comics_objs.append(Comic(title,script,image_url))
+            comics_objs.append(Comic(page,title,script,image_url,comic_url))
 
             filename = 'xkcd-' + page + '.png'
             item_dir = 'xkcd-' + page
             os.mkdir(item_dir)
             os.chdir(item_dir)
             if self.file_format == 'json':
-                results = {'title': title, 'script': script, 'image_url': image_url, 'comic_url': comic_url}
+                results = {'page': page, 'title': title, 'script': script, 'image_url': image_url, 'comic_url': comic_url}
                 with open('xkcd-' + page + '.json', 'w') as f:
                     json.dump(results, f)
             elif self.file_format == 'csv':
                 with open('xkcd-' + page + '.csv', 'w', newline='') as csvfile:
                     writer = csv.writer(csvfile)
-                    writer.writerow(['title', 'script', 'image_url','comic_url'])
-                    writer.writerow([title, script, image_url,comic_url])
+                    writer.writerow(['page', 'title', 'script', 'image_url','comic_url'])
+                    writer.writerow([page, title, script, image_url,comic_url])
             else:
                 raise KeyError(self.file_format+"isn't a supported format")
             os.chdir("..\\")
