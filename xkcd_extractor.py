@@ -16,6 +16,7 @@ class Container(object):
         self.comics = []
         self.titles = []
         self.image_urls = []
+        self.lastest_comic = ""
 
     def append(self, comic):
         """
@@ -26,6 +27,9 @@ class Container(object):
         self.comics.append(comic)
         self.titles.append(comic.title)
         self.image_urls.append(comic.image_url)
+
+    def lc(self,lastest_comic):
+        self.lastest_comic = lastest_comic
 
 
 class Comic(object):
@@ -70,33 +74,44 @@ def crawl(user_input, file_format='json', save_path="."):
             time = datetime.now().strftime("%d_%m_%Y_%H-%M-%S")
             os.mkdir(time)
             os.chdir(time)
+            yield scrapy.Request(url=self.start_url, callback=self.parse_lc)
             for i in self.user_input:
-                yield scrapy.Request(url=self.start_url + str(i), callback=self.parse)
+                yield scrapy.Request(url=self.start_url+str(i), callback=self.parse)
 
+        def parse_lc(self,response):
+            comics_objs.lc(response.xpath('/html/head/meta[4]/@content').re_first(r'\d+'))
 
         def parse(self, response):
             page = response.url.split("/")[-2]
+
+            # extract url
+            comic_url = response.url
             # extract title
-            title = response.xpath('//div[@id="ctitle"]/text()').extract()[0]
-            # extract text
-            script = response.xpath('//div[@id="comic"]//img/@title').extract()[0][1:-1].split("' '")
-            # extract comic
-            filename = 'xkcd-' + page + '.png'
-            image_url = "http://" + response.xpath('//div[@id="comic"]//img/@src').extract()[0][2:]
+            title = response.xpath('//div[@id="ctitle"]/text()').extract_first()
+            try:
+                # extract texts
+                script = response.xpath('//div[@id="comic"]//img/@title').extract_first()
+                # extract comic
+                image_url = "http://" + response.xpath('//div[@id="comic"]//img/@src').extract_first()[2:]
+            except:
+                image_url,script = "https://uniim1.shutterfly.com/render/00-vOZRc1W66JnxNvciJy8U4krEZhJw8T6sbQ90aYWJRTIu1xZykVtCbeNYqPr02Q1KldMTLfbtJ__wYVBQ_4iTow?cn=THISLIFE&res=small",""
+                print("Found a build-yourself comic, empty script and image_url")
             # export to file
             comics_objs.append(Comic(title,script,image_url))
+
+            filename = 'xkcd-' + page + '.png'
             item_dir = 'xkcd-' + page
             os.mkdir(item_dir)
             os.chdir(item_dir)
             if self.file_format == 'json':
-                results = {'title': title, 'script': script, 'image_url': image_url}
+                results = {'title': title, 'script': script, 'image_url': image_url, 'comic_url': comic_url}
                 with open('xkcd-' + page + '.json', 'w') as f:
                     json.dump(results, f)
             elif self.file_format == 'csv':
                 with open('xkcd-' + page + '.csv', 'w', newline='') as csvfile:
                     writer = csv.writer(csvfile)
-                    writer.writerow(['title', 'script', 'image_url'])
-                    writer.writerow([title, script, image_url])
+                    writer.writerow(['title', 'script', 'image_url','comic_url'])
+                    writer.writerow([title, script, image_url,comic_url])
             else:
                 raise KeyError(self.file_format+"isn't a supported format")
             os.chdir("..\\")
@@ -116,4 +131,4 @@ def crawl(user_input, file_format='json', save_path="."):
 
 
 if __name__ == "__main__":
-    print(crawl(user_input='5,7,10-15',file_format="json").titles)
+    print(crawl(user_input='1350',file_format="json").lastest_comic)
