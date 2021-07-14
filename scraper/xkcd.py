@@ -2,7 +2,7 @@ from typing import Optional
 
 from scrapy.crawler import CrawlerProcess
 from xkcd_spider import XKCDSpider
-
+from xkcd_all_spider import XKCDAllSpider
 
 class XKCD():  # noqa: D101
     def __init__(self, process: Optional[CrawlerProcess]):
@@ -10,8 +10,13 @@ class XKCD():  # noqa: D101
         self.accepted_formats = ['json', 'csv']
 
     def __xkcd_crawl(self, start: Optional[int], finish: Optional[int],  # noqa: D102
-                   save_path: Optional[str], file_format: Optional[str]) -> None:
-        self.process.crawl(XKCDSpider, start, finish, save_path, file_format)
+                   save_path: Optional[str], file_format: Optional[str],
+                   scrape_all: Optional[bool]=False) -> None:
+        self.process.crawl(XKCDSpider, start, finish, save_path, file_format, scrape_all)
+        return
+
+    def __xkcd_crawl_all(self, save_path: Optional[str]=None, file_format: Optional[str]=None) -> None:
+        self.process.crawl(XKCDAllSpider, save_path, file_format)
         return
 
     def get_certain(self,  # noqa: D102
@@ -37,9 +42,17 @@ class XKCD():  # noqa: D101
         self.__xkcd_crawl(start, finish+1, None, file_format) # inclusive 
 
 
+    def get_all(self, file_format: Optional[str]=None, save_path: Optional[str]=None) -> None:
+        file_format = self.accepted_formats[0] if file_format not in self.accepted_formats else file_format
+
+        self.__xkcd_crawl_all(None, 'json')
+
+
 if __name__ == '__main__':
     process = CrawlerProcess()
 
     xkcd = XKCD(process)
-    xkcd.get_range(543, 547, 'json', "")
+    # xkcd.get_range(543, 547, 'json', None)
+    xkcd.get_all('json', None)
+    # xkcd.get_certain(1350, 'json', None)
     process.start()

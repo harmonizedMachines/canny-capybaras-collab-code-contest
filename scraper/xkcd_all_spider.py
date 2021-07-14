@@ -7,33 +7,20 @@ from typing import Generator, Optional
 import scrapy
 
 
-class XKCDSpider(scrapy.Spider):  # noqa: D101
-    name = "xkcd"
+class XKCDAllSpider(scrapy.Spider):  # noqa: D101
+    name = "xkcd_all"
 
     def __init__(self,
-                 start: Optional[int] = None, finish: Optional[int] = None,
-                 save_path: Optional[str] = None, file_format: Optional[str] = None,
-                 scrape_all: Optional[bool]=False, **kwargs):
+                 save_path: Optional[str] = None, file_format: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
-        self.start_url = 'https://xkcd.com/'
-        self.start = start
-        self.finish = finish
+        self.start_urls = ['https://xkcd.com/1/']
+        self.start = 1
         self.save_path = save_path
         self.save_path_original = save_path
         self.file_format = file_format
-        self.scrape_all = scrape_all
-
-    def start_requests(self) -> Generator[scrapy.http.request.Request, None, None]:  # noqa: D102
-        for i in range(self.start, self.finish):
-            try:
-                yield scrapy.Request(url=self.start_url + str(i), callback=self.parse)
-            except Exception:
-                self.log(f"Could not scrape {self.start_url}{i}/", level=logging.ERROR)
-                pass
-
 
     def parse(self,  # noqa: D102
-              response: Optional[scrapy.http.response.html.HtmlResponse]) -> scrapy.http.request.Request:
+              response: Optional[scrapy.http.response.html.HtmlResponse]) -> None:
         page = response.url.split("/")[-2]
 
         # extract title
@@ -61,7 +48,6 @@ class XKCDSpider(scrapy.Spider):  # noqa: D101
             self.log(f"Could not scrape comic image", level=logging.ERROR)
             image_url = None
             pass
-
 
         # making folder for files
         try:
@@ -98,9 +84,16 @@ class XKCDSpider(scrapy.Spider):  # noqa: D101
             finally:
                 self.log(f'Saved file xkcd-{page}.csv')
 
-        if image_url is None:
-            return
-        return scrapy.Request(url=image_url, callback=self.parse_img, cb_kwargs=dict(filename=filename, save_path=self.save_path))
+        if image_url is not None:
+            yield scrapy.Request(url=image_url, callback=self.parse_img, cb_kwargs=dict(filename=filename, save_path=self.save_path))
+
+        next_page = response.xpath('//a[@rel="next"]/@href').extract_first()
+
+        if next_page:
+            try:
+                yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
+            except Exception:
+                pass
 
     # Creating image for comic
     def parse_img(self,  # noqa: D102
