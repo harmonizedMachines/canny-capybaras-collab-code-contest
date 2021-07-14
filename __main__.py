@@ -40,8 +40,9 @@ class App():
     """
 
     file_format_button = CyclableButton(["JSON", "CSV"])
+    start_button = CyclableButton(["START", "STOP"])
     comic_id_button = EditableButton()
-    buttons = [file_format_button, comic_id_button]
+    buttons = [file_format_button, comic_id_button, start_button]
 
     def start(self) -> None:
         """Starts the application"""
@@ -80,11 +81,18 @@ class App():
                 self.comic_id_button.next_charachter(ch)
                 self.draw_menu(screen)
 
+                if self.start_button.get_current_option() == "STOP":
+                    '''
+                    start xkcd scraper
+                    '''
+                    pass
+
     def initialize_colors(self) -> None:
         """Initializes each color pair"""
         curses.init_pair(ColorPair.black_on_white.value, curses.COLOR_BLACK, curses.COLOR_WHITE)
         curses.init_pair(ColorPair.red_on_black.value, curses.COLOR_RED, curses.COLOR_BLACK)
         curses.init_pair(ColorPair.blue_on_black.value, curses.COLOR_BLUE, curses.COLOR_BLACK)
+        curses.init_pair(ColorPair.green_on_black.value, curses.COLOR_GREEN, curses.COLOR_BLACK)
 
     def draw_menu(self, screen: curses.window) -> None:
         """Draws the entire menu"""
@@ -189,6 +197,22 @@ class App():
         """
         input_win = screen.subwin(height, width, y, x)
         input_win.border(0, 0, 0, 0, curses.ACS_TTEE, curses.ACS_SBSS, curses.ACS_BTEE)
+
+
+        start_button_text = self.start_button.get_current_option()
+        if start_button_text == "START":
+            add_str_color(input_win, 3, 1, start_button_text, ColorPair.green_on_black)
+        else:
+            add_str_color(input_win, 3, 1, start_button_text, ColorPair.red_on_black)
+
+        
+        self.start_button.set_bounding_box(
+            3 + y,
+            1,
+            3 + y,
+            len(start_button_text)+ x
+        )
+        
 
         comic_id_text = "Comic ID(s):"
         input_win.addstr(1, 1, comic_id_text)

@@ -11,3 +11,4 @@ class ColorPair(Enum):
     black_on_white = 1
     red_on_black = 2
     blue_on_black = 3
+    green_on_black = 4
