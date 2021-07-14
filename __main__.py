@@ -78,7 +78,7 @@ class App():
             elif ch == ord('q'):
                 return
             else:
-                self.comic_id_button.next_charachter(ch)
+                self.comic_id_button.next_character(ch)
                 self.draw_menu(screen)
 
                 if self.start_button.get_current_option() == "STOP":
@@ -198,21 +198,18 @@ class App():
         input_win = screen.subwin(height, width, y, x)
         input_win.border(0, 0, 0, 0, curses.ACS_TTEE, curses.ACS_SBSS, curses.ACS_BTEE)
 
-
         start_button_text = self.start_button.get_current_option()
         if start_button_text == "START":
             add_str_color(input_win, 3, 1, start_button_text, ColorPair.green_on_black)
         else:
             add_str_color(input_win, 3, 1, start_button_text, ColorPair.red_on_black)
 
-        
         self.start_button.set_bounding_box(
             3 + y,
             1,
             3 + y,
-            len(start_button_text)+ x
+            len(start_button_text) + x
         )
-        
 
         comic_id_text = "Comic ID(s):"
         input_win.addstr(1, 1, comic_id_text)

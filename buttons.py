@@ -5,6 +5,7 @@ from typing import List
 class Button(ABC):
     """
     Class that handles clickable bounding boxes
+
     Attributes:
     top_left_y : int
         The absolute top left y position of the button's bounding box
@@ -41,6 +42,7 @@ class Button(ABC):
 class CyclableButton(Button):
     """
     Variant of the button class that cycles through a list of set options each time it is clicked
+
     Attributes:
     options : list[str]
         The list of options that the button can cycle through
@@ -71,12 +73,13 @@ class EditableButton(Button):
     Variant of the button class that allows you to edit text
 
     Attributes:
-    options : list[str]
-        The list of options that the button can cycle through
-    current_option_index : int
-        The index of the currently selected options
-        Starts at 0
+    editing : bool
+        True when the user can edit the button
+        False when the user can't
+    text : str
+        The editable text that the button contains
     """
+
     def __init__(self):
         self.editing = False
         self.text = "1"
@@ -85,11 +88,14 @@ class EditableButton(Button):
         """Called when the button is clicked"""
         self.editing = True
 
-    def get_current_option(self) -> str:
-        """Gets the currently shown option"""
-        return self.text
+    def next_character(self, ascii_code: int) -> None:
+        """
+        Attempts to input a character and responds accordingly based on the character inputted
 
-    def next_charachter(self, ascii_code: int) -> None:
+        Backspace - Erases the latest character
+        Enter - Disables typing
+        Any other character - Added to the button's texxt
+        """
         if self.editing:
             if ascii_code == 8:
                 self.text = self.text[:-1]
