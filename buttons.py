@@ -1,3 +1,4 @@
+import os
 from typing import List
 
 
@@ -15,6 +16,11 @@ class Button():
     bottom_right_x : int
         The absolute bottom right x position of the button's bounding box
     """
+
+    top_left_y = -1
+    top_left_x = -1
+    bottom_right_y = -1
+    bottom_right_x = -1
 
     def set_bounding_box(self, top_left_y: int, top_left_x: int, bottom_right_y: int, bottom_right_x: int) -> None:
         """Sets the region where the button can be clicked"""
@@ -107,3 +113,18 @@ class EditableButton(Button):
                 self.editing = False
             else:
                 self.text += chr(ascii_code)
+
+
+class HyperlinkButton(Button):
+    """
+    Variant of the button class that opens a link when clicked on
+
+    url : str
+        The URL that should be opened when the button is clicked
+    """
+
+    url = ""
+
+    def on_click(self) -> None:
+        """Opens the URL when the button is clicked"""
+        os.startfile(self.url)  # noqa: S606 - Temporary

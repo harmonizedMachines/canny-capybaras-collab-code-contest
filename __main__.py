@@ -5,7 +5,7 @@ import time
 import psutil
 
 import xkcd_extractor
-from buttons import Button, CyclableButton, EditableButton
+from buttons import Button, CyclableButton, EditableButton, HyperlinkButton
 from color_pair import ColorPair
 from curses_utils import add_str_color
 
@@ -45,7 +45,13 @@ class App():
     comic_id_button = EditableButton()
     next_button = Button()
     back_button = Button()
-    buttons = [file_format_button, comic_id_button, start_button, next_button, back_button]
+    comic_url_button = HyperlinkButton()
+    image_url_button = HyperlinkButton()
+    buttons = [
+        file_format_button, comic_id_button, start_button,
+        next_button, back_button,
+        comic_url_button, image_url_button,
+    ]
 
     comic_results = None
     comic_results_index = 0
@@ -186,17 +192,35 @@ class App():
             alt_text = self.comic_results.scripts[self.comic_results_index]
             comic_url = self.comic_results.comic_urls[self.comic_results_index]
             image_url = self.comic_results.image_urls[self.comic_results_index]
+            comic_url_text = "Comic URL:"
+            image_url_text = "Image URL:"
+            output_win.addstr(4, 1, comic_url_text)
+            output_win.addstr(5, 1, image_url_text)
+            add_str_color(output_win, 4, len(comic_url_text) + 2, comic_url, ColorPair.green_on_black)
+            add_str_color(output_win, 5, len(image_url_text) + 2, image_url, ColorPair.green_on_black)
+            self.comic_url_button.url = comic_url
+            self.image_url_button.url = image_url
+            self.comic_url_button.set_bounding_box(
+                6,
+                len(comic_url_text) + 2,
+                6,
+                len(comic_url_text) + len(comic_url) + 2
+            )
+            self.image_url_button.set_bounding_box(
+                7,
+                len(image_url_text) + 2,
+                7,
+                len(image_url_text) + len(image_url) + 2
+            )
         else:
             page_id = "N/A"
             title = "N/A"
             alt_text = "N/A"
-            comic_url = "N/A"
-            image_url = "N/A"
+            output_win.addstr(4, 1, "Comic URL: N/A")
+            output_win.addstr(5, 1, "Image URL: N/A")
         output_win.addstr(1, 1, f"ID: {page_id}")
         output_win.addstr(2, 1, f"Title: {title}")
         output_win.addstr(3, 1, f"Alt Text: {alt_text}")
-        output_win.addstr(4, 1, f"Comic URL: {comic_url}")
-        output_win.addstr(5, 1, f"Image URL: {image_url}")
 
         if not self.comic_results:
             num_results_text = "0/0 Results"
