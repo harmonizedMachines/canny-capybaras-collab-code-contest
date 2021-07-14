@@ -58,6 +58,7 @@ class App():
         """
         curses.curs_set(0)
         curses.mousemask(curses.BUTTON1_RELEASED)
+        curses.mouseinterval(0)
         self.initialize_colors()
         self.draw_menu(screen)
         status_bar_thread = threading.Thread(target=self.draw_status_bar_continuously, args=(screen, 0.5))
