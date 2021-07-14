@@ -85,7 +85,8 @@ class App():
                         if button == self.start_button:
                             if self.start_button.get_current_option() == "STOP":
                                 self.draw_menu(screen)
-                                self.comic_results = xkcd_extractor.crawl(self.comic_id_button.text)
+                                file_format = self.file_format_button.get_current_option().lower()
+                                self.comic_results = xkcd_extractor.crawl(self.comic_id_button.text, file_format)
                             else:
                                 self.comic_results = []
                                 self.comic_results_index = 0
