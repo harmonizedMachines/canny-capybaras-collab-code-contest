@@ -107,12 +107,14 @@ class EditableButton(Button):
         Any other character - Added to the button's texxt
         """
         if self.editing:
+            allowed_text = [',', '-', '*']
             if ascii_code == 8:
                 self.text = self.text[:-1]
             elif ascii_code == 10:
                 self.editing = False
             else:
-                self.text += chr(ascii_code)
+                if 48 <= ascii_code <= 57 or chr(ascii_code) in allowed_text:
+                    self.text += chr(ascii_code)
 
 
 class HyperlinkButton(Button):
