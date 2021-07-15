@@ -59,7 +59,6 @@ def crawl(user_input, file_format='json', save_path="."):
             user_input[index_input:index_input] = str_range
             user_input.remove(input_)
     user_input = [int(input_) for input_ in user_input]
-    print(user_input)
 
     class XKCDSpider(scrapy.Spider):
         name = "xkcd_spider"
