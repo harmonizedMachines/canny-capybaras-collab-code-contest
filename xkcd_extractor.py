@@ -24,6 +24,7 @@ class Container(object):
         self.scripts = []
         self.image_urls = []
         self.comic_urls = []
+        self.image_paths = []
         self.lastest_comic = ""
 
     def append(self, comic):
@@ -38,6 +39,7 @@ class Container(object):
         self.scripts.append([comic[0],comic[1].script])
         self.image_urls.append([comic[0],comic[1].image_url])
         self.comic_urls.append([comic[0],comic[1].comic_url])
+        self.image_paths.append([comic[0],comic[1].image_path])
 
     def lc(self,lastest_comic):
         self.lastest_comic = lastest_comic
@@ -47,12 +49,13 @@ class Comic(object):
     """
     Custom object that store the title, scripts and the image_url of a comic
     """
-    def __init__(self, page,title,script,image_url,comic_url):
+    def __init__(self, page,title,script,image_url,comic_url,image_path):
         self.page = page
         self.title = title
         self.script = script
         self.image_url = image_url
         self.comic_url = comic_url
+        self.image_path = image_path
 
 
 def crawl(user_input, file_format='json', save_path="."):
@@ -84,9 +87,8 @@ def crawl(user_input, file_format='json', save_path="."):
 
         def start_requests(self):
             os.chdir(self.save_path)
-            time = datetime.now().strftime("%d_%m_%Y_%H-%M-%S")
-            os.mkdir(time)
-            os.chdir(time)
+            self.time = datetime.now().strftime("%d_%m_%Y_%H-%M-%S")
+            os.mkdir(self.time)
             yield scrapy.Request(url=self.start_url, callback=self.parse_lc)
             for index_i, i in enumerate(self.user_input):
                 yield scrapy.Request(url=self.start_url+str(i), callback=self.parse, cb_kwargs=dict(index=index_i))
@@ -109,13 +111,17 @@ def crawl(user_input, file_format='json', save_path="."):
             except:
                 image_url,script = "https://uniim1.shutterfly.com/render/00-vOZRc1W66JnxNvciJy8U4krEZhJw8T6sbQ90aYWJRTIu1xZykVtCbeNYqPr02Q1KldMTLfbtJ__wYVBQ_4iTow?cn=THISLIFE&res=small",""
                 print("Found a build-yourself comic, empty script and image_url")
-            # export to file
-            comics_objs.append([index,Comic(page,title,script,image_url,comic_url)])
 
             filename = 'xkcd-' + page + '.png'
             item_dir = 'xkcd-' + page
+            os.chdir(self.time)
             os.mkdir(item_dir)
             os.chdir(item_dir)
+
+            # export to file
+            image_path = os.path.join(self.time, item_dir, filename)
+            comics_objs.append([index,Comic(page,title,script,image_url,comic_url,image_path)])
+
             if self.file_format == 'json':
                 results = {'page': page, 'title': title, 'script': script, 'image_url': image_url, 'comic_url': comic_url}
                 with open('xkcd-' + page + '.json', 'w') as f:
@@ -128,20 +134,23 @@ def crawl(user_input, file_format='json', save_path="."):
             else:
                 raise KeyError(self.file_format+"isn't a supported format")
             os.chdir("..\\")
+            os.chdir("..\\")
             return scrapy.Request(url=image_url, callback=self.parse_img, cb_kwargs=dict(filename=filename,item_dir=item_dir))
 
         def parse_img(self, response, filename,item_dir):
+            os.chdir(self.time)
             os.chdir(item_dir)
             with open(filename, 'wb') as f:
                 f.write(response.body)
             self.log(f'Saved file {filename}')
+            os.chdir("..\\")
             os.chdir("..\\")
 
     process = CrawlerProcess()
     process.crawl(XKCDSpider,user_input=user_input, file_format=file_format, save_path=save_path)
     process.start()
 
-    for var_ in ['pages','titles','scripts','comics','image_urls','comic_urls']:
+    for var_ in ['pages','titles','scripts','comics','image_urls','comic_urls','image_paths']:
         exec(f'comics_objs.{var_}.sort(key=operator.itemgetter(0))')
         exec(f'for list_ in comics_objs.{var_} :\n del list_[0]')
         exec(f'comics_objs.{var_} = [list_[0] for list_ in comics_objs.{var_}]')

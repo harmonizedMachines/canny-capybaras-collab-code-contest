@@ -2,6 +2,7 @@ import curses
 import threading
 import time
 
+import img2text
 import psutil
 
 import xkcd_extractor
@@ -47,10 +48,12 @@ class App():
     back_button = Button()
     comic_url_button = HyperlinkButton()
     image_url_button = HyperlinkButton()
+    show_image_button = CyclableButton(["Show Image", "Hide Image"])
     buttons = [
         file_format_button, comic_id_button, start_button,
         next_button, back_button,
         comic_url_button, image_url_button,
+        show_image_button
     ]
 
     comic_results = None
@@ -199,6 +202,8 @@ class App():
             output_win.addstr(5, 1, image_url_text)
             add_str_color(output_win, 4, len(comic_url_text) + 2, comic_url, ColorPair.green_on_black)
             add_str_color(output_win, 5, len(image_url_text) + 2, image_url, ColorPair.green_on_black)
+            self.comic_url_button.is_enabled = True
+            self.image_url_button.is_enabled = True
             self.comic_url_button.url = comic_url
             self.image_url_button.url = image_url
             self.comic_url_button.set_bounding_box(
@@ -213,7 +218,27 @@ class App():
                 7,
                 len(image_url_text) + len(image_url) + 2
             )
+
+            show_image_button_text = self.show_image_button.get_current_option()
+            add_str_color(output_win, 6, 1, show_image_button_text, ColorPair.green_on_black)
+            self.show_image_button.set_bounding_box(
+                8,
+                1,
+                8,
+                len(show_image_button_text)
+            )
+
+            if show_image_button_text == "Hide Image":
+                image_path = self.comic_results.image_paths[self.comic_results_index]
+                ascii_img = img2text.img_to_ascii(image_path, width=width - 2, reverse=True)
+                lines = ascii_img.split('\n')
+                for i, line in enumerate(lines):
+                    if i > height - 12:
+                        break
+                    output_win.addstr(i + 8, 1, line)
         else:
+            self.comic_url_button.is_enabled = False
+            self.image_url_button.is_enabled = False
             page_id = "N/A"
             title = "N/A"
             alt_text = "N/A"

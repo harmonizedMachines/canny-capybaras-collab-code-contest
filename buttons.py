@@ -7,6 +7,8 @@ class Button():
     Class that handles clickable bounding boxes
 
     Attributes:
+    is_enabled : bool
+        If true then the button is clickable
     top_left_y : int
         The absolute top left y position of the button's bounding box
     top_left_x : int
@@ -17,6 +19,7 @@ class Button():
         The absolute bottom right x position of the button's bounding box
     """
 
+    is_enabled = True
     top_left_y = -1
     top_left_x = -1
     bottom_right_y = -1
@@ -42,7 +45,8 @@ class Button():
 
     def is_intersecting(self, y: int, x: int) -> bool:
         """Checks if the coordinates intersect the button's bounding box"""
-        return self.top_left_y <= y <= self.bottom_right_y and self.top_left_x <= x <= self.bottom_right_x
+        return (self.is_enabled
+                and self.top_left_y <= y <= self.bottom_right_y and self.top_left_x <= x <= self.bottom_right_x)
 
     def on_click(self) -> None:
         """Called when the button is clicked"""
