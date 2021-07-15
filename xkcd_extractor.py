@@ -52,12 +52,14 @@ def crawl(user_input, file_format='json', save_path="."):
     comics_objs = Container()  # creation of a Container
 
     user_input = user_input.split(',')
-    for input in user_input:
-        if '-' in input:
-            split_input = input.split('-')
-            user_input = [*user_input,*range(int(split_input[0]),int(split_input[1])+1)]
-            user_input.remove(input)
-    user_input = [int(input) for input in user_input]
+    for index_input,input_ in enumerate(user_input):
+        if '-' in input_:
+            split_input = input_.split('-')
+            str_range = [str(int_)for int_ in range(int(split_input[0]),int(split_input[1])+1)]
+            user_input[index_input:index_input] = str_range
+            user_input.remove(input_)
+    user_input = [int(input_) for input_ in user_input]
+    print(user_input)
 
     class XKCDSpider(scrapy.Spider):
         name = "xkcd_spider"
@@ -131,4 +133,4 @@ def crawl(user_input, file_format='json', save_path="."):
 
 
 if __name__ == "__main__":
-    print(crawl(user_input='1350',file_format="json").lastest_comic)
+    print(crawl(user_input='1,3,5-10,25',file_format="json").lastest_comic)
