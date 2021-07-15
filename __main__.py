@@ -113,6 +113,7 @@ class App():
         curses.init_pair(ColorPair.red_on_black.value, curses.COLOR_RED, curses.COLOR_BLACK)
         curses.init_pair(ColorPair.blue_on_black.value, curses.COLOR_BLUE, curses.COLOR_BLACK)
         curses.init_pair(ColorPair.green_on_black.value, curses.COLOR_GREEN, curses.COLOR_BLACK)
+        curses.init_pair(ColorPair.white_on_black.value, curses.COLOR_WHITE, curses.COLOR_BLACK)
 
     def draw_menu(self, screen: curses.window) -> None:
         """Draws the entire menu"""
@@ -286,6 +287,9 @@ class App():
         input_win.addstr(1, 1, comic_id_text)
         numbers = self.comic_id_button.text
         add_str_color(input_win, 1, len(comic_id_text) + 2, numbers, ColorPair.red_on_black)
+        if self.comic_id_button.editing:
+            add_str_color(input_win, 1, len(comic_id_text) + 2 + len(numbers), "_", ColorPair.white_on_black)
+            # add_str_color(input_win, 1, len(comic_id_text) + 2 + len(numbers), " ", ColorPair.black_on_white)
 
         self.comic_id_button.set_bounding_box(
             1 + y,
