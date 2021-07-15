@@ -3,6 +3,7 @@
 
 import csv
 import json
+import operator
 import os
 from datetime import datetime
 
@@ -31,12 +32,12 @@ class Container(object):
         :param comic
 
         """
-        self.comics.append(comic)
-        self.pages.append(comic.page)
-        self.titles.append(comic.title)
-        self.scripts.append(comic.script)
-        self.image_urls.append(comic.image_url)
-        self.comic_urls.append(comic.comic_url)
+        self.comics.append([comic[0],comic[1]])
+        self.pages.append([comic[0],comic[1].page])
+        self.titles.append([comic[0],comic[1].title])
+        self.scripts.append([comic[0],comic[1].script])
+        self.image_urls.append([comic[0],comic[1].image_url])
+        self.comic_urls.append([comic[0],comic[1].comic_url])
 
     def lc(self,lastest_comic):
         self.lastest_comic = lastest_comic
@@ -74,7 +75,6 @@ def crawl(user_input, file_format='json', save_path="."):
 
     class XKCDSpider(scrapy.Spider):
         name = "xkcd_spider"
-
         def __init__(self, user_input, save_path, file_format, **kwargs):
             super().__init__(**kwargs)
             self.start_url = 'https://xkcd.com/'
@@ -88,13 +88,13 @@ def crawl(user_input, file_format='json', save_path="."):
             os.mkdir(time)
             os.chdir(time)
             yield scrapy.Request(url=self.start_url, callback=self.parse_lc)
-            for i in self.user_input:
-                yield scrapy.Request(url=self.start_url+str(i), callback=self.parse)
+            for index_i, i in enumerate(self.user_input):
+                yield scrapy.Request(url=self.start_url+str(i), callback=self.parse, cb_kwargs=dict(index=index_i))
 
         def parse_lc(self,response):
             comics_objs.lc(response.xpath('/html/head/meta[4]/@content').re_first(r'\d+'))
 
-        def parse(self, response):
+        def parse(self, response,index):
             page = response.url.split("/")[-2]
 
             # extract url
@@ -110,7 +110,7 @@ def crawl(user_input, file_format='json', save_path="."):
                 image_url,script = "https://uniim1.shutterfly.com/render/00-vOZRc1W66JnxNvciJy8U4krEZhJw8T6sbQ90aYWJRTIu1xZykVtCbeNYqPr02Q1KldMTLfbtJ__wYVBQ_4iTow?cn=THISLIFE&res=small",""
                 print("Found a build-yourself comic, empty script and image_url")
             # export to file
-            comics_objs.append(Comic(page,title,script,image_url,comic_url))
+            comics_objs.append([index,Comic(page,title,script,image_url,comic_url)])
 
             filename = 'xkcd-' + page + '.png'
             item_dir = 'xkcd-' + page
@@ -140,8 +140,14 @@ def crawl(user_input, file_format='json', save_path="."):
     process = CrawlerProcess()
     process.crawl(XKCDSpider,user_input=user_input, file_format=file_format, save_path=save_path)
     process.start()
+
+    for var_ in ['pages','titles','scripts','comics','image_urls','comic_urls']:
+        exec(f'comics_objs.{var_}.sort(key=operator.itemgetter(0))')
+        exec(f'for list_ in comics_objs.{var_} :\n del list_[0]')
+        exec(f'comics_objs.{var_} = [list_[0] for list_ in comics_objs.{var_}]')
+
     return comics_objs
 
 
 if __name__ == "__main__":
-    print(crawl(user_input='1,3,5-10,25',file_format="json").lastest_comic)
+    print(crawl(user_input='1,3,5-10,25',file_format="json").titles)
