@@ -1,4 +1,5 @@
 import curses
+import os
 import threading
 import time
 
@@ -48,12 +49,14 @@ class App():
     back_button = Button()
     comic_url_button = HyperlinkButton()
     image_url_button = HyperlinkButton()
+    open_folder_button = Button()
     show_image_button = CyclableButton(["Show Image", "Hide Image"])
     buttons = [
         file_format_button, comic_id_button, start_button,
         next_button, back_button,
         comic_url_button, image_url_button,
-        show_image_button
+        open_folder_button,
+        show_image_button,
     ]
 
     comic_results = None
@@ -103,6 +106,10 @@ class App():
                             self.comic_results_index = (self.comic_results_index + 1) % len(self.comic_results.comics)
                         elif button == self.back_button:
                             self.comic_results_index = (self.comic_results_index - 1) % len(self.comic_results.comics)
+                        elif button == self.open_folder_button:
+                            image_path = self.comic_results.image_paths[self.comic_results_index]
+                            folder_path = '\\'.join(image_path.split('\\')[:-1])
+                            os.startfile(folder_path)  # noqa: S606 - Temporary
                     self.draw_menu(screen)
             elif ch == ord('q'):
                 return
@@ -208,7 +215,7 @@ class App():
             if len(comic_url) + len(comic_url_text) + 1 >= width:
                 image_url = image_url[:len(comic_url) + len(comic_url_text) - 10]
                 image_url += "..."
-            
+
             add_str_color(output_win, 4, len(comic_url_text) + 2, comic_url, ColorPair.green_on_black)
             add_str_color(output_win, 5, len(image_url_text) + 2, image_url, ColorPair.green_on_black)
             self.comic_url_button.is_enabled = True
@@ -230,11 +237,24 @@ class App():
 
             show_image_button_text = self.show_image_button.get_current_option()
             add_str_color(output_win, 6, 1, show_image_button_text, ColorPair.green_on_black)
+            self.show_image_button.is_enabled = True
             self.show_image_button.set_bounding_box(
                 8,
                 1,
                 8,
                 len(show_image_button_text)
+            )
+
+            open_folder_text = "Open Folder"
+            open_folder_y = 1
+            open_folder_x = width - len(open_folder_text) - 2
+            add_str_color(output_win, open_folder_y, open_folder_x, open_folder_text, ColorPair.green_on_black)
+            self.open_folder_button.is_enabled = True
+            self.open_folder_button.set_bounding_box(
+                open_folder_y + 2,
+                open_folder_x,
+                open_folder_y + 2,
+                open_folder_x + len(open_folder_text)
             )
 
             if show_image_button_text == "Hide Image":
@@ -248,6 +268,8 @@ class App():
         else:
             self.comic_url_button.is_enabled = False
             self.image_url_button.is_enabled = False
+            self.show_image_button.is_enabled = False
+            self.open_folder_button.is_enabled = False
             page_id = "N/A"
             title = "N/A"
             alt_text = "N/A"
@@ -256,8 +278,8 @@ class App():
         output_win.addstr(1, 1, f"ID: {page_id}")
         output_win.addstr(2, 1, f"Title: {title}")
         if len(alt_text) + len("Alt Text:") + 1 >= width:
-                alt_text = alt_text[:width - len("Alt Text:") - 6]
-                alt_text += "..."
+            alt_text = alt_text[:width - len("Alt Text:") - 6]
+            alt_text += "..."
         output_win.addstr(3, 1, f"Alt Text: {alt_text}")
 
         if not self.comic_results:
