@@ -200,6 +200,15 @@ class App():
             image_url_text = "Image URL:"
             output_win.addstr(4, 1, comic_url_text)
             output_win.addstr(5, 1, image_url_text)
+
+            if len(image_url) + len(image_url_text) + 1 >= width:
+                image_url = image_url[:len(image_url) + len(image_url_text) - 5]
+                image_url += "..."
+
+            if len(comic_url) + len(comic_url_text) + 1 >= width:
+                image_url = image_url[:len(comic_url) + len(comic_url_text) - 10]
+                image_url += "..."
+            
             add_str_color(output_win, 4, len(comic_url_text) + 2, comic_url, ColorPair.green_on_black)
             add_str_color(output_win, 5, len(image_url_text) + 2, image_url, ColorPair.green_on_black)
             self.comic_url_button.is_enabled = True
@@ -246,6 +255,9 @@ class App():
             output_win.addstr(5, 1, "Image URL: N/A")
         output_win.addstr(1, 1, f"ID: {page_id}")
         output_win.addstr(2, 1, f"Title: {title}")
+        if len(alt_text) + len("Alt Text:") + 1 >= width:
+                alt_text = alt_text[:width - len("Alt Text:") - 6]
+                alt_text += "..."
         output_win.addstr(3, 1, f"Alt Text: {alt_text}")
 
         if not self.comic_results:
