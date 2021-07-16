@@ -202,9 +202,7 @@ class App():
         output_win = screen.subwin(height, width, y, x)
         output_win.border(0, 0, 0, 0, curses.ACS_SSSB)
 
-        # print(self.comic_results)
         if self.comic_results and self.comic_results.comics:
-            print("Ejkejlkfsdjlksdfjkfsdjlkdsfjkosdfj")
             page_id = self.comic_results.pages[self.comic_results_index]
             title = self.comic_results.titles[self.comic_results_index]
             alt_text = self.comic_results.scripts[self.comic_results_index]
