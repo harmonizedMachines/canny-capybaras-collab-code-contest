@@ -11,7 +11,7 @@
 
 ## Features 
 + scrape comic title, id, url, image url and the alternative text from [xkcd](https://xkcd.com/)
-+ scrape a specific queue with comic id's from [xkcd](https://xkcd.com/) (1-10)
++ scrape a specific queue with comic id's from [xkcd](https://xkcd.com/) (800-1000)
 + save scraped comic data in a json/csv file
 + CPU ussage
 + GPU ussage
