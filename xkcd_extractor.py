@@ -1,6 +1,7 @@
 import spider
 import operator
-
+from spider import SucideSpider
+from scrapy.crawler import CrawlerProcess
 
 def crawl(user_input, file_format='json', save_path="."):
     """
@@ -9,9 +10,19 @@ def crawl(user_input, file_format='json', save_path="."):
     :param file_format , by default 'json' ,can be changed to 'csv'
     :param save_path , in working directory by default, can by change by a str path
     """
-    print(spider.sspider())
+    # list to collect all items
+
+    process = CrawlerProcess({
+        'USER_AGENT': 'scrapy',
+        'LOG_LEVEL': 'INFO',
+        'ITEM_PIPELINES': {'__main__.ItemCollectorPipeline': 100}
+    })
+
+    # start the spider
+    process.crawl(SucideSpider)
+    process.start()
     if '*' in user_input:
-        user_input = user_input.replace('*', spider.sspider())
+        user_input = user_input.replace('*', items[0]['lastest_comic'])
     user_input = user_input.split(',')
     for index_input, input_ in enumerate(user_input):
         if '-' in input_:
@@ -21,12 +32,16 @@ def crawl(user_input, file_format='json', save_path="."):
             user_input.remove(input_)
     user_input = [int(input_) for input_ in user_input]
 
-    for var_ in ['titles','comics','image_urls']:
-        exec(f'comics_objs.{var_}.sort(key=operator.itemgetter(0))')
-        exec(f'for list_ in comics_objs.{var_} :\n del list_[0]')
-        exec(f'comics_objs.{var_} = [list_[0] for list_ in comics_objs.{var_}]')
-
     return spider.cspider(user_input,file_format,save_path)
 
 if __name__ == "__main__":
+    items = []
+
+    # pipeline to fill the items list
+    class ItemCollectorPipeline(object):
+        def __init__(self):
+            self.ids_seen = set()
+
+        def process_item(self, item, spider):
+            items.append(item)
     print(crawl(user_input='1,3,1100-*',file_format="json").titles)
