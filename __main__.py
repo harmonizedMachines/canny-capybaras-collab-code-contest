@@ -9,7 +9,7 @@ import psutil
 import xkcd_extractor
 from buttons import Button, CyclableButton, EditableButton, HyperlinkButton
 from color_pair import ColorPair
-from curses_utils import add_str_color
+from curses_utils import add_str_color, ins_ch_color
 
 
 class App():
@@ -345,10 +345,15 @@ class App():
         comic_id_text = "Comic ID(s):"
         input_win.addstr(1, 1, comic_id_text)
         numbers = self.comic_id_button.text
+        sh, sw = screen.getmaxyx()
+        if len(comic_id_text) + len(numbers) + x + 1 >= sw - 1:
+            self.comic_id_button.text = numbers[:-1]
+            numbers = self.comic_id_button.text
+
         add_str_color(input_win, 1, len(comic_id_text) + 2, numbers, ColorPair.red_on_black)
         if self.comic_id_button.editing:
-            add_str_color(input_win, 1, len(comic_id_text) + 2 + len(numbers), "_", ColorPair.white_on_black)
-            # add_str_color(input_win, 1, len(comic_id_text) + 2 + len(numbers), " ", ColorPair.black_on_white)
+            x = len(comic_id_text) + 2 + len(numbers)
+            add_str_color(input_win, 1, x, "_", ColorPair.white_on_black)
 
         self.comic_id_button.set_bounding_box(
             1 + y,
@@ -384,9 +389,8 @@ class App():
         add_str_color(screen, sh - 1, 0, status_bar_text, ColorPair.black_on_white)
         add_str_color(screen, sh - 1, len(status_bar_text), whitespace_width, ColorPair.black_on_white)
 
-        screen.attron(curses.color_pair(ColorPair.black_on_white.value))
-        screen.insch(sh - 1, sw - 1, " ")  # using insch so doesn't wrap and cause error
-        screen.attroff(curses.color_pair(ColorPair.black_on_white.value))
+        # Add space in corner using insch so it doesn't wrap and cause an error
+        ins_ch_color(screen, sh - 1, sw - 1, ' ', ColorPair.black_on_white)
 
 
 if __name__ == "__main__":
