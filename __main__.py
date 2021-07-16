@@ -98,9 +98,13 @@ class App():
                             if self.start_button.get_current_option() == "STOP":
                                 self.draw_menu(screen)
                                 file_format = self.file_format_button.get_current_option().lower()
-                                self.comic_results = xkcd_extractor.crawl(self.comic_id_button.text, file_format)
+                                try:
+                                    self.comic_results = xkcd_extractor.crawl(self.comic_id_button.text, file_format)
+                                except ValueError:
+                                    self.start_button.cycle()
+                                    curses.beep()
                             else:
-                                self.comic_results = []
+                                self.comic_results = None
                                 self.comic_results_index = 0
                         elif button == self.next_button:
                             self.comic_results_index = (self.comic_results_index + 1) % len(self.comic_results.comics)
@@ -114,7 +118,8 @@ class App():
             elif ch == ord('q'):
                 return
             else:
-                self.comic_id_button.next_character(ch)
+                if not self.comic_id_button.next_character(ch):
+                    curses.beep()
                 self.draw_menu(screen)
 
     def initialize_colors(self) -> None:
@@ -197,7 +202,9 @@ class App():
         output_win = screen.subwin(height, width, y, x)
         output_win.border(0, 0, 0, 0, curses.ACS_SSSB)
 
-        if self.comic_results:
+        # print(self.comic_results)
+        if self.comic_results and self.comic_results.comics:
+            print("Ejkejlkfsdjlksdfjkfsdjlkdsfjkosdfj")
             page_id = self.comic_results.pages[self.comic_results_index]
             title = self.comic_results.titles[self.comic_results_index]
             alt_text = self.comic_results.scripts[self.comic_results_index]
@@ -282,11 +289,11 @@ class App():
             alt_text += "..."
         output_win.addstr(3, 1, f"Alt Text: {alt_text}")
 
-        if not self.comic_results:
-            num_results_text = "0/0 Results"
-        else:
+        if self.comic_results and self.comic_results.comics:
             num_results = len(self.comic_results.comics)
             num_results_text = f"{self.comic_results_index + 1}/{num_results} Results"
+        else:
+            num_results_text = "0/0 Results"
 
         output_win.addstr(height - 2, width // 2 - len(num_results_text) // 2, num_results_text)
 
@@ -349,6 +356,7 @@ class App():
         if len(comic_id_text) + len(numbers) + x + 1 >= sw - 1:
             self.comic_id_button.text = numbers[:-1]
             numbers = self.comic_id_button.text
+            curses.beep()
 
         add_str_color(input_win, 1, len(comic_id_text) + 2, numbers, ColorPair.red_on_black)
         if self.comic_id_button.editing:

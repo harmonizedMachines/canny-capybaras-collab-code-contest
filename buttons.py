@@ -108,17 +108,24 @@ class EditableButton(Button):
 
         Backspace - Erases the latest character
         Enter - Disables typing
-        Any other character - Added to the button's texxt
+        Any other character - Added to the button's text
+
+        Returns True if the input was valid
+        Returns False otherwise
         """
         if self.editing:
             allowed_text = [',', '-', '*']
             if ascii_code == 8:
                 self.text = self.text[:-1]
+                return True
             elif ascii_code == 10:
                 self.editing = False
+                return True
             else:
                 if 48 <= ascii_code <= 57 or chr(ascii_code) in allowed_text:
                     self.text += chr(ascii_code)
+                    return True
+        return False
 
 
 class HyperlinkButton(Button):
