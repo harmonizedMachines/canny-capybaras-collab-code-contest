@@ -19,21 +19,21 @@ class App():
     Methods:
     start()
         Starts the application
-    main(screen : curses.initscr())
+    main(screen : curses.window)
         The entry point of the application
-    initialize_colors(screen : curses.initscr())
+    initialize_colors(screen : curses.window)
         Initializes each color pair
-    draw_menu(screen : curses.initscr(), delay : float)
+    draw_menu(screen : curses.window, delay : float)
         Draws the entire menu
     draw_status_bar_continuously()
         Draws the status bar on the screen and refreshes the screen continously with a delay
-    draw_title_window(screen : curses.initscr(), height : int, width : int, y : int, x : int)
+    draw_title_window(screen : curses.window, height : int, width : int, y : int, x : int)
         Draws the title window with the application name
-    draw_output_window(screen : curses.initscr(), height : int, width : int, y : int, x : int)
+    draw_output_window(screen : curses.window, height : int, width : int, y : int, x : int)
         Draws the output window with information scraped based on user input
-    draw_input_window(screen : curses.initscr(), height : int, width : int, y : int, x : int)
+    draw_input_window(screen : curses.window, height : int, width : int, y : int, x : int)
         Draws the input window where the user can input data
-    draw_status_bar(screen : curses.initscr())
+    draw_status_bar(screen : curses.window)
         Draws the status bar at the bottom of the screen
     Attributes:
     buttons : list[Button]
@@ -66,12 +66,12 @@ class App():
         """Starts the application"""
         curses.wrapper(self.main)
 
-    def main(self, screen: curses.initscr()) -> None:
+    def main(self, screen: curses.window) -> None:
         """
         The entry point of the application
 
         Parameters:
-        screen : curses.initscr()
+        screen : curses.window
             The main window
         """
         curses.curs_set(0)
@@ -130,7 +130,7 @@ class App():
         curses.init_pair(ColorPair.green_on_black.value, curses.COLOR_GREEN, curses.COLOR_BLACK)
         curses.init_pair(ColorPair.white_on_black.value, curses.COLOR_WHITE, curses.COLOR_BLACK)
 
-    def draw_menu(self, screen: curses.initscr()) -> None:
+    def draw_menu(self, screen: curses.window) -> None:
         """Draws the entire menu"""
         screen.clear()
         sh, sw = screen.getmaxyx()
@@ -145,12 +145,12 @@ class App():
 
         self.draw_status_bar(screen)
 
-    def draw_status_bar_continuously(self, screen: curses.initscr(), delay: float) -> None:
+    def draw_status_bar_continuously(self, screen: curses.window, delay: float) -> None:
         """
         Draws the status bar on the screen and refreshes the screen continously with a delay
 
         Parameters:
-        screen : curses.initscr()
+        screen : curses.window
             The parent window of the status bar
         delay : float
             The delay in seconds before the status bar is drawn again
@@ -160,12 +160,12 @@ class App():
             screen.refresh()
             time.sleep(delay)
 
-    def draw_title_window(self, screen: curses.initscr(), height: int, width: int, y: int, x: int) -> None:
+    def draw_title_window(self, screen: curses.window, height: int, width: int, y: int, x: int) -> None:
         """
         Draws the title window with the application name
 
         Parameters:
-        screen : curses.initscr()
+        screen : curses.window
             The parent window of the title window
         height : int
             The height of the title window
@@ -183,12 +183,12 @@ class App():
         centered_x = width // 2 - len(title) // 2
         title_win.addstr(1, centered_x, title)
 
-    def draw_output_window(self, screen: curses.initscr(), height: int, width: int, y: int, x: int) -> None:
+    def draw_output_window(self, screen: curses.window, height: int, width: int, y: int, x: int) -> None:
         """
         Draws the output window with information scraped based on user input
 
         Parameters:
-        screen : curses.initscr()
+        screen : curses.window
             The parent window of the output window
         height : int
             The height of the output window
@@ -315,12 +315,12 @@ class App():
             back_x + len(back_text)
         )
 
-    def draw_input_window(self, screen: curses.initscr(), height: int, width: int, y: int, x: int) -> None:
+    def draw_input_window(self, screen: curses.window, height: int, width: int, y: int, x: int) -> None:
         """
         Draws the input window where the user can input data
 
         Parameters:
-        screen : curses.initscr()
+        screen : curses.window
             The parent window of the input window
         height : int
             The height of the input window
@@ -380,12 +380,12 @@ class App():
             len(output_type_text) + len(file_format) + x
         )
 
-    def draw_status_bar(self, screen: curses.initscr()) -> None:
+    def draw_status_bar(self, screen: curses.window) -> None:
         """
         Draws the status bar at the bottom of the screen
 
         Parameters:
-        screen : curses.initscr()
+        screen : curses.window
             The parent window of the status bar
         """
         sh, sw = screen.getmaxyx()

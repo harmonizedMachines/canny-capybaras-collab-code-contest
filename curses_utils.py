@@ -3,12 +3,12 @@ import curses
 from color_pair import ColorPair
 
 
-def add_str_color(screen: curses.initscr(), y: int, x: int, string: str, color_pair: ColorPair) -> None:
+def add_str_color(screen: curses.window, y: int, x: int, string: str, color_pair: ColorPair) -> None:
     """
-    Wraps curses.initscr().addstr but adds the string in a passed color
+    Wraps curses.window.addstr but adds the string in a passed color
 
     Parameters:
-    screen : curses.initscr()
+    screen : curses.window
         The window that the string should be added to
     y : int
         The relative (to the screen) y position of the string
@@ -22,12 +22,12 @@ def add_str_color(screen: curses.initscr(), y: int, x: int, string: str, color_p
     screen.attroff(curses.color_pair(color_pair.value))
 
 
-def ins_ch_color(screen: curses.initscr(), y: int, x: int, character: str, color_pair: ColorPair) -> None:
+def ins_ch_color(screen: curses.window, y: int, x: int, character: str, color_pair: ColorPair) -> None:
     """
-    Wraps curses.initscr().insch but draws the character in a passed color
+    Wraps curses.window.insch but draws the character in a passed color
 
     Parameters:
-    screen : curses.initscr()
+    screen : curses.window
         The window that the character should be added to
     y : int
         The relative (to the screen) y position of the character
