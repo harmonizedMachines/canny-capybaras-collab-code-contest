@@ -114,7 +114,7 @@ class EditableButton(Button):
         Returns False otherwise
         """
         if self.editing:
-            allowed_text = [',', '-', '*']
+            allowed_text = [',', '-', '*', ' ']
             if ascii_code == 8:
                 self.text = self.text[:-1]
                 return True
