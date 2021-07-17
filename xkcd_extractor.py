@@ -18,7 +18,7 @@ class Container(object):
         self.titles = []
         self.image_urls = []
 
-    def append(self, comic):
+    def append(self, comic: list):
         """
         Append lists with comic's propreties
         :param comic
@@ -34,23 +34,30 @@ class Comic(object):
     Custom object that store the title, scripts and the image_url of a comic
     """
 
-    def __init__(self, title, script, image_url):
+    def __init__(self, title: str, script: str, image_url: str):
         self.title = title
         self.script = script
         self.image_url = image_url
 
 
-def parse_img(image_url, filename, item_dir):
+def parse_img(image_url, filename, item_dir) -> None:
+    """
+    save image in the specified path
+    :param image_url , image url obtained by scrapping
+    :param filename , the name of the image file
+    :param item_dir , the directory to be saved in
+    """
     os.chdir(item_dir)
     with open(filename, 'wb') as f:
         f.write(requests.get(image_url).content)
     os.chdir("..\\")
 
 
-def crawl(user_input, file_format='json', save_path="."):
+def crawl(user_input: str, file_format: str = 'json', save_path: str = ".") -> Container:
     """
     mode : list, must define the :param 'list_' with a list
     mode : range, must define the :param 'start' and the :param 'end' with integers
+    :param user_input: the input for the comics to be scrapped
     :param file_format , by default 'json' ,can be changed to 'csv'
     :param save_path , in working directory by default, can by change by a str path
     """
