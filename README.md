@@ -3,12 +3,12 @@
 
 
 ## Tools & Technologies
-![](https://img.shields.io/badge/Code-Python-idk?style=flat&logo=python&logoColor=white&color=ff00)
-![](https://img.shields.io/badge/Technology-BeautifulSoup-idk?style=flat&logo=scrapy&logoColor=white&color=ff00)
-![](https://img.shields.io/badge/Technology-img2text-idk?style=flat&logo=img2text&logoColor=white&color=ff00)
-![](https://img.shields.io/badge/Technology-psutil-idk?style=flat&logo=psutil&logoColor=white&color=ff00)
-![](https://img.shields.io/badge/Technology-Curses-idk?style=flat&logo=windows-curses&logoColor=white&color=ff00)
-![](https://img.shields.io/badge/License-MIT-idk?style=flat&logo=windows-curses&logoColor=white&color=ff00)
+![https://www.python.org/](https://img.shields.io/badge/Code-Python-idk?style=flat&logo=python&logoColor=white&color=ff00)
+![https://pypi.org/project/bs4/](https://img.shields.io/badge/Technology-BeautifulSoup-idk?style=flat&logo=scrapy&logoColor=white&color=ff00)
+![https://pypi.org/project/img2text/](https://img.shields.io/badge/Technology-img2text-idk?style=flat&logo=img2text&logoColor=white&color=ff00)
+![https://pypi.org/project/psutil/](https://img.shields.io/badge/Technology-psutil-idk?style=flat&logo=psutil&logoColor=white&color=ff00)
+![](https://img.shields.io/badge/Technology-Curses-idk?style=flat&logo=curses&logoColor=white&color=ff00)
+![https://github.com/git/git-scm.com/blob/main/MIT-LICENSE.txt](https://img.shields.io/badge/License-MIT-idk?style=flat&logo=windows-curses&logoColor=white&color=ff00)
 
 ## Features
 + scrape comic title, id, url, image url and the alternative text from [xkcd](https://xkcd.com/)
