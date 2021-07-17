@@ -39,7 +39,27 @@ class App():
     buttons : list[Button]
         A list of every button object
     file_format_button : CyclableButton
-        The button that allows the user to change the file format uses when the data is outputted
+        Changes the file format used when the data is outputted
+    start_button : CyclableButton
+        Start/stops the web scraping
+    comic_id_button : EditableButton
+        Allows the user to edit the comic id input for the web scraper
+    next_button : Button
+        Increments the comic_results_index to display the next scraped comic result
+    back_button : Button
+        Decrements the comic_results_index to display the previous scraped comic result
+    comic_url_button : HyperlinkButton
+        Opens the comic URL
+    image_url_button : HyperlinkButton
+        Opens the image URL
+    open_folder_button : Button
+        Opens the folder containing the scraped comic
+    show_image_button : CyclableButton
+        Displays/hides an ASCII version of the comic's image
+    comic_results : Container
+        Contains all the comics scraped
+    comic_results_index : int
+        The index of the currently selected comic
     """
 
     file_format_button = CyclableButton(["JSON", "CSV"])
