@@ -7,9 +7,9 @@ from bs4 import BeautifulSoup
 
 
 class Container(object):
-
     """
     Container that contains 3 lists ('comics' for the list of comics that have been crawled,
+
     'titles' for the list of all comic's titles that have been crawled and
     'image_urls' for the list of all comic's image's url that have been crawled)
     """
@@ -20,11 +20,10 @@ class Container(object):
         self.image_urls = []
 
     def append(self, comic: list) -> None:
-
         """
+
         Append lists with comic's propreties
         :param comic
-
         """
         self.comics.append([comic[0], comic[1]])
         self.titles.append([comic[0], comic[1].title])
@@ -32,7 +31,6 @@ class Container(object):
 
 
 class Comic(object):
-
     """Custom object that store the title, scripts and the image_url of a comic"""
 
     def __init__(self, title: str, script: str, image_url: str):
@@ -42,9 +40,9 @@ class Comic(object):
 
 
 def parse_img(image_url: str, filename: str, item_dir: str) -> None:
-
     """
     Save image in the specified path
+
     :param image_url , image url obtained by scrapping
     :param filename , the name of the image file
     :param item_dir , the directory to be saved in
@@ -56,10 +54,10 @@ def parse_img(image_url: str, filename: str, item_dir: str) -> None:
 
 
 def crawl(user_input: str, file_format: str = 'json', save_path: str = ".") -> Container:
-
     """
-    mode : list, must define the :param 'list_' with a list
+    Mode : list, must define the :param 'list_' with a list
     mode : range, must define the :param 'start' and the :param 'end' with integers
+
     :param user_input: the input for the comics to be scrapped
     :param file_format , by default 'json' ,can be changed to 'csv'
     :param save_path , in working directory by default, can by change by a str path
