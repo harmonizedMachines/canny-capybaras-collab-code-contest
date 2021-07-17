@@ -1,6 +1,6 @@
 import csv
 import json
-import operator
+import operator  # noqa: F401
 import os
 
 import requests
@@ -125,9 +125,9 @@ def crawl(user_input: str, file_format: str = 'json', save_path: str = ".") -> C
         parse_img(image_url, filename, item_dir)
 
     for var_ in ['titles', 'comics', 'image_urls']:
-        exec(f'comics_objs.{var_}.sort(key=operator.itemgetter(0))')
-        exec(f'for list_ in comics_objs.{var_} :\n del list_[0]')
-        exec(f'comics_objs.{var_} = [list_[0] for list_ in comics_objs.{var_}]')
+        exec(f'comics_objs.{var_}.sort(key=operator.itemgetter(0))')   # noqa: S102
+        exec(f'for list_ in comics_objs.{var_} :\n del list_[0]')  # noqa: S102
+        exec(f'comics_objs.{var_} = [list_[0] for list_ in comics_objs.{var_}]')  # noqa: S102
 
     return comics_objs
 
