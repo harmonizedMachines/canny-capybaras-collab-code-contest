@@ -1,19 +1,15 @@
 import os
-import datetime
+from datetime import datetime
 import json
 import csv
 from scrapy.crawler import CrawlerProcess,Spider
 from scrapy import Request
 
-def __init__():
-    global items
-    items = []
-
 class ItemCollectorPipeline(object):
     def __init__(self):
         self.ids_seen = set()
 
-    def process_item(self, item):
+    def process_item(self, item,spider):
         items.append(item)
 
 class Container(object):
@@ -48,27 +44,20 @@ class Comic(object):
         self.image_url = image_url
 
 
-class SucideSpider(Spider):
-    name = "sucide"
-
-    def start_requests(self):
-            yield Request(url='https://xkcd.com/', callback=self.parse)
-
-    def parse(self, response):
-            return {'lastest_comic':response.xpath('/html/head/meta[4]/@content').re_first(r'\d+')}
-
 
 class XKCDSpider(Spider):
     name = "xkcd_spider"
 
-    def __init__(self,user_input,save_path,file_format,*args,**kwargs):
+    def __init__(self,user_in,save_path,file_format,*args,**kwargs):
         super(XKCDSpider, self).__init__(*args,**kwargs)
+        self.user_in = user_in
         self.comics_objs = []
-        self.user_input = user_input
         self.save_path = save_path
         self.file_format = file_format
+        self.user_input = []
 
     def start_requests(self):
+        yield Request(url='https://xkcd.com/', callback=self.parse_lc)
         os.chdir(self.save_path)
         time = datetime.now().strftime("%d_%m_%Y_%H-%M-%S")
         os.mkdir(time)
@@ -121,29 +110,29 @@ class XKCDSpider(Spider):
         self.log(f'Saved file {filename}')
         os.chdir("..\\")
 
-def sspider():
+    def parse_lc(self, response):
+        lastest_comic = response.xpath('/html/head/meta[4]/@content').re_first(r'\d+')
+        if '*' in self.user_in:
+            self.user_in = self.user_in.replace('*', lastest_comic)
+        self.user_in = self.user_in.split(',')
+        for index_input, input_ in enumerate(self.user_in):
+            if '-' in input_:
+                split_input = input_.split('-')
+                str_range = [str(int_) for int_ in range(int(split_input[0]), int(split_input[1]) + 1)]
+                self.user_in[index_input:index_input] = str_range
+                self.user_in.remove(input_)
+        self.user_input = [int(input_) for input_ in self.user_in]
 
+def sspider(user_input,save_path,file_format):
+    global items
     # pipeline to fill the items list
-
+    items = []
     process = CrawlerProcess({
         'USER_AGENT': 'scrapy',
         'LOG_LEVEL': 'INFO',
-        'ITEM_PIPELINES': {'__main__.ItemCollectorPipeline': 100}
+        'ITEM_PIPELINES': {'spider.ItemCollectorPipeline': 100}
     })
-    process.crawl(SucideSpider)
+    process.crawl(XKCDSpider, user_in=user_input, save_path=save_path, file_format=file_format)
     process.start()
-
-    return items[0]['lastest_comic']
-
-def cspider(user_input,save_path,file_format):
-
-    # pipeline to fill the items list
-    process = CrawlerProcess({
-        'USER_AGENT': 'scrapy',
-        'LOG_LEVEL': 'INFO',
-        'ITEM_PIPELINES': {'__main__.ItemCollectorPipeline': 100}
-    })
-    process.crawl(XKCDSpider,user_input=user_input,save_path=save_path,file_format=file_format)
-    process.start()
-
     return items[0]['comics_objs']
+
