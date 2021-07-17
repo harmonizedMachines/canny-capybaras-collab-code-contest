@@ -30,6 +30,7 @@
 + click on `Show Image` to show the image in console in ASCII art (picture 2&3)
 + with buttons `Back` & `Next` you can switch between results
 + see the magic
+
 ![](/images/start_tui.png)
 ![](/images/executed_tui.png)
 ![](/images/ASCII_image_tui.png)
