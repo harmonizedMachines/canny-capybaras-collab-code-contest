@@ -1,9 +1,10 @@
-import requests
-import os
-from bs4 import BeautifulSoup
-import json
 import csv
-import operator
+import json
+import os
+
+import requests
+from bs4 import BeautifulSoup
+
 
 class Container(object):
     """
@@ -11,6 +12,7 @@ class Container(object):
     'titles' for the list of all comic's titles that have been crawled and
     'image_urls' for the list of all comic's image's url that have been crawled)
     """
+
     def __init__(self):
         self.comics = []
         self.titles = []
@@ -22,25 +24,28 @@ class Container(object):
         :param comic
 
         """
-        self.comics.append([comic[0],comic[1]])
-        self.titles.append([comic[0],comic[1].title])
-        self.image_urls.append([comic[0],comic[1].image_url])
+        self.comics.append([comic[0], comic[1]])
+        self.titles.append([comic[0], comic[1].title])
+        self.image_urls.append([comic[0], comic[1].image_url])
 
 
 class Comic(object):
     """
     Custom object that store the title, scripts and the image_url of a comic
     """
-    def __init__(self, title,script,image_url):
+
+    def __init__(self, title, script, image_url):
         self.title = title
         self.script = script
         self.image_url = image_url
+
 
 def parse_img(image_url, filename, item_dir):
     os.chdir(item_dir)
     with open(filename, 'wb') as f:
         f.write(requests.get(image_url).content)
     os.chdir("..\\")
+
 
 def crawl(user_input, file_format='json', save_path="."):
     """
@@ -51,8 +56,8 @@ def crawl(user_input, file_format='json', save_path="."):
     """
     if '*' in user_input:
         html_text = requests.get('https://xkcd.com/')
-        soup = BeautifulSoup(html_text.text,'html.parser')
-        lastest_comic = soup.find('meta',property="og:url")["content"].split('.com/')[1][:-1]
+        soup = BeautifulSoup(html_text.text, 'html.parser')
+        lastest_comic = soup.find('meta', property="og:url")["content"].split('.com/')[1][:-1]
         user_input = user_input.replace('*', lastest_comic)
     user_input = user_input.split(',')
     for index_input, input_ in enumerate(user_input):
@@ -64,18 +69,18 @@ def crawl(user_input, file_format='json', save_path="."):
     user_input = [int(input_) for input_ in user_input]
     comics_objs = Container()
     os.chdir(save_path)
-    try :
+    try:
         os.mkdir('output')
-    except:
-        pass
+    except Exception as ex:
+        print("Error: ", ex.__class__)
     os.chdir('output')
-    for index,urls in enumerate(user_input):
-        html_text = requests.get('https://xkcd.com/'+str(urls))
-        soup = BeautifulSoup(html_text.text,'html.parser')
+    for index, urls in enumerate(user_input):
+        html_text = requests.get('https://xkcd.com/' + str(urls))
+        soup = BeautifulSoup(html_text.text, 'html.parser')
         page = str(urls)
 
         # extract url
-        comic_url = 'https://xkcd.com/'+str(urls)
+        comic_url = 'https://xkcd.com/' + str(urls)
         # extract title
         title = soup.find(id="ctitle").text
         try:
@@ -83,9 +88,11 @@ def crawl(user_input, file_format='json', save_path="."):
             script = soup.find(id="comic").find("img")['title']
             # extract comic
             image_url = "https:" + soup.find(id="comic").find("img")['src']
-        except:
-            image_url, script = "https://uniim1.shutterfly.com/render/00-vOZRc1W66JnxNvciJy8U4krEZhJw8T6sbQ90aYWJRTIu1xZykVtCbeNYqPr02Q1KldMTLfbtJ__wYVBQ_4iTow?cn=THISLIFE&res=small", ""
-            print("Found a special comic, empty script and image_url")
+        except Exception as ex:
+            image_url, script = "https://uniim1.shutterfly.com/render/" \
+                                "00-vOZRc1W66JnxNvciJy8U4krEZhJw8T6sbQ90aYWJRTIu1xZykVtCbeNYqPr02Q1" \
+                                "KldMTLfbtJ__wYVBQ_4iTow?cn=THISLIFE&res=small", ""
+            print("Error", ex.__class__, ": Found a special comic, empty script and image_url")
         # export to file
         comics_objs.append([index, Comic(title, script, image_url)])
 
@@ -107,12 +114,13 @@ def crawl(user_input, file_format='json', save_path="."):
         os.chdir("..\\")
         parse_img(image_url, filename, item_dir)
 
-    for var_ in ['titles','comics','image_urls']:
+    for var_ in ['titles', 'comics', 'image_urls']:
         exec(f'comics_objs.{var_}.sort(key=operator.itemgetter(0))')
         exec(f'for list_ in comics_objs.{var_} :\n del list_[0]')
         exec(f'comics_objs.{var_} = [list_[0] for list_ in comics_objs.{var_}]')
 
     return comics_objs
 
+
 if __name__ == "__main__":
-    print(crawl(user_input='1,3',file_format="json").titles)
+    print(crawl(user_input='1,3', file_format="json").titles)
