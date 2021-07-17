@@ -359,8 +359,8 @@ class App():
 
         add_str_color(input_win, 1, len(comic_id_text) + 2, numbers, ColorPair.red_on_black)
         if self.comic_id_button.editing:
-            x = len(comic_id_text) + 2 + len(numbers)
-            add_str_color(input_win, 1, x, "_", ColorPair.white_on_black)
+            editing_hint_x = len(comic_id_text) + 2 + len(numbers)
+            add_str_color(input_win, 1, editing_hint_x, "_", ColorPair.white_on_black)
 
         self.comic_id_button.set_bounding_box(
             1 + y,
