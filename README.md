@@ -26,6 +26,9 @@
 + to select the file format of the output click on the text behind `File Format:`
   + can change between JSON or CSV
 + click on `START` to start crawling process
++ click on `Show Image` to show the image in console in ASCII art
 + with buttons `Back` & `Next` you can switch between results
 + see the magic
-![](/images/tui.png)
+![](/images/start_tui.png)
+![](/images/executed_tui.png)
+![](/images/ASCII_image_tui.png)
