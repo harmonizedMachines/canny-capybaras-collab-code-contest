@@ -1,8 +1,20 @@
-import scrapy
 import os
 import datetime
 import json
 import csv
+from scrapy.crawler import CrawlerProcess,Spider
+from scrapy import Request
+
+def __init__():
+    global items
+    items = []
+
+class ItemCollectorPipeline(object):
+    def __init__(self):
+        self.ids_seen = set()
+
+    def process_item(self, item):
+        items.append(item)
 
 class Container(object):
     """
@@ -36,19 +48,20 @@ class Comic(object):
         self.image_url = image_url
 
 
-class SucideSpider(scrapy.Spider):
+class SucideSpider(Spider):
     name = "sucide"
 
     def start_requests(self):
-            yield scrapy.Request(url='https://xkcd.com/', callback=self.parse)
+            yield Request(url='https://xkcd.com/', callback=self.parse)
 
     def parse(self, response):
             return {'lastest_comic':response.xpath('/html/head/meta[4]/@content').re_first(r'\d+')}
 
 
-class XKCDSpider(scrapy.Spider):
+class XKCDSpider(Spider):
     name = "xkcd_spider"
-    def __init__(self,user_input = 1 ,save_path = "",file_format = 'json',*args,**kwargs):
+
+    def __init__(self,user_input,save_path,file_format,*args,**kwargs):
         super(XKCDSpider, self).__init__(*args,**kwargs)
         self.comics_objs = []
         self.user_input = user_input
@@ -61,7 +74,7 @@ class XKCDSpider(scrapy.Spider):
         os.mkdir(time)
         os.chdir(time)
         for index_i, i in enumerate(self.user_input):
-            yield scrapy.Request(url='https://xkcd.com/' + str(i), callback=self.parse, cb_kwargs=dict(index=index_i))
+            yield Request(url='https://xkcd.com/' + str(i), callback=self.parse, cb_kwargs=dict(index=index_i))
         return {'comics_objs':self.comics_objs}
 
     def parse(self, response, index):
@@ -98,7 +111,7 @@ class XKCDSpider(scrapy.Spider):
         else:
             raise KeyError(self.file_format + "isn't a supported format")
         os.chdir("..\\")
-        return scrapy.Request(url=image_url, callback=self.parse_img,
+        return Request(url=image_url, callback=self.parse_img,
                               cb_kwargs=dict(filename=filename, item_dir=item_dir))
 
     def parse_img(self, response, filename, item_dir):
@@ -108,3 +121,29 @@ class XKCDSpider(scrapy.Spider):
         self.log(f'Saved file {filename}')
         os.chdir("..\\")
 
+def sspider():
+
+    # pipeline to fill the items list
+
+    process = CrawlerProcess({
+        'USER_AGENT': 'scrapy',
+        'LOG_LEVEL': 'INFO',
+        'ITEM_PIPELINES': {'__main__.ItemCollectorPipeline': 100}
+    })
+    process.crawl(SucideSpider)
+    process.start()
+
+    return items[0]['lastest_comic']
+
+def cspider(user_input,save_path,file_format):
+
+    # pipeline to fill the items list
+    process = CrawlerProcess({
+        'USER_AGENT': 'scrapy',
+        'LOG_LEVEL': 'INFO',
+        'ITEM_PIPELINES': {'__main__.ItemCollectorPipeline': 100}
+    })
+    process.crawl(XKCDSpider,user_input=user_input,save_path=save_path,file_format=file_format)
+    process.start()
+
+    return items[0]['comics_objs']
