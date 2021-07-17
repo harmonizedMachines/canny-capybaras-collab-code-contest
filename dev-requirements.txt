@@ -12,3 +12,10 @@ flake8-annotations~=2.0
 flake8-bandit~=2.1
 flake8-docstrings~=1.5
 flake8-isort~=4.0
+
+# Project packages
+requests~=2.26.0
+beautifulsoup4~=4.8.0
+windows-curses~=2.2
+img2text~=0.0.2
+psutil~=5.8.0
