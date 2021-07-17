@@ -3,7 +3,6 @@ import os
 import datetime
 import json
 import csv
-from scrapyscript import Job, Processor
 
 class Container(object):
     """
@@ -49,9 +48,12 @@ class SucideSpider(scrapy.Spider):
 
 class XKCDSpider(scrapy.Spider):
     name = "xkcd_spider"
-    def __init__(self, *args, **kwargs):
-        super(XKCDSpider, self).__init__(*args, **kwargs)
+    def __init__(self,user_input = 1 ,save_path = "",file_format = 'json',*args,**kwargs):
+        super(XKCDSpider, self).__init__(*args,**kwargs)
         self.comics_objs = []
+        self.user_input = user_input
+        self.save_path = save_path
+        self.file_format = file_format
 
     def start_requests(self):
         os.chdir(self.save_path)
@@ -60,7 +62,7 @@ class XKCDSpider(scrapy.Spider):
         os.chdir(time)
         for index_i, i in enumerate(self.user_input):
             yield scrapy.Request(url='https://xkcd.com/' + str(i), callback=self.parse, cb_kwargs=dict(index=index_i))
-        return self.comics_objs
+        return {'comics_objs':self.comics_objs}
 
     def parse(self, response, index):
         page = response.url.split("/")[-2]
@@ -106,13 +108,3 @@ class XKCDSpider(scrapy.Spider):
         self.log(f'Saved file {filename}')
         os.chdir("..\\")
 
-def cspider(user_input,file_format,save_path):
-    spider = Job(SucideSpider,user_input=user_input, file_format=file_format, save_path=save_path)
-    processor = Processor(settings=None)
-    data = processor.run(spider)
-    return data
-
-def sspider():
-    spider = Job(SucideSpider)
-    processor = Processor(settings=None)
-    return processor.run(spider)

@@ -1,6 +1,5 @@
-import spider
 import operator
-from spider import SucideSpider
+from spider import SucideSpider,XKCDSpider
 from scrapy.crawler import CrawlerProcess
 
 def crawl(user_input, file_format='json', save_path="."):
@@ -32,7 +31,16 @@ def crawl(user_input, file_format='json', save_path="."):
             user_input.remove(input_)
     user_input = [int(input_) for input_ in user_input]
 
-    return spider.cspider(user_input,file_format,save_path)
+    process.crawl(XKCDSpider,user_input,file_format,save_path)
+    process.start()
+    comics_objs = items[0]['comics_objs']
+    for var_ in ['titles','comics','image_urls']:
+        exec(f'comics_objs.{var_}.sort(key=operator.itemgetter(0))')
+        exec(f'for list_ in comics_objs.{var_} :\n del list_[0]')
+        exec(f'comics_objs.{var_} = [list_[0] for list_ in comics_objs.{var_}]')
+
+
+    return comics_objs
 
 if __name__ == "__main__":
     items = []
