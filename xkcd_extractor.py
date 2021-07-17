@@ -93,7 +93,7 @@ def req(index, urls,file_format):
     os.chdir("..\\")
     parse_img(image_url, filename, item_dir)
 
-    return [index, Comic(title, script, image_url, comic_url, image_path)]
+    return [index, Comic(page, title, script, image_url, comic_url, image_path)]
 
 
 def crawl(user_input, file_format='json', save_path="."):
