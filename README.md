@@ -8,6 +8,8 @@
 ![](https://img.shields.io/badge/Technologie-Scrapy-idk?style=flat&logo=scrapy&logoColor=white&color=ff00)
 ![](https://img.shields.io/badge/Technologie-img2text-idk?style=flat&logo=img2text&logoColor=white&color=ff00)
 ![](https://img.shields.io/badge/Technologie-psutil-idk?style=flat&logo=psutil&logoColor=white&color=ff00)
+![](https://img.shields.io/badge/Technologie-WindowsCurses-idk?style=flat&logo=windows-curses&logoColor=white&color=ff00)
+
 
 ## Features 
 + scrape comic title, id, url, image url and the alternative text from [xkcd](https://xkcd.com/)
