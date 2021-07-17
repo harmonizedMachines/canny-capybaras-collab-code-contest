@@ -80,7 +80,8 @@ def crawl(user_input: str, file_format: str = 'json', save_path: str = ".") -> C
     comics_objs = Container()
     os.chdir(save_path)
     try:
-        os.mkdir('output')
+        if not os.path.exists('output'):
+            os.makedirs('output')
     except Exception as ex:
         print("Error: ", ex.__class__)
     os.chdir('output')
@@ -108,7 +109,8 @@ def crawl(user_input: str, file_format: str = 'json', save_path: str = ".") -> C
 
         filename = 'xkcd-' + page + '.png'
         item_dir = 'xkcd-' + page
-        os.mkdir(item_dir)
+        if not os.path.exists(item_dir):
+            os.makedirs(item_dir)
         os.chdir(item_dir)
         if file_format == 'json':
             results = {'title': title, 'script': script, 'image_url': image_url, 'comic_url': comic_url}
