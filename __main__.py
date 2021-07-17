@@ -99,10 +99,12 @@ class App():
                                 self.draw_menu(screen)
                                 file_format = self.file_format_button.get_current_option().lower()
                                 try:
-                                    self.comic_results = xkcd_extractor.crawl(self.comic_id_button.text, file_format)
-                                except ValueError:
-                                    self.start_button.cycle()
-                                    curses.beep()
+                                    self.comic_results = xkcd_extractor.crawl(self.comic_id_button.text, screen, app, self.start_button, file_format)
+                                except (ValueError, AssertionError) as e:
+                                    if e == ValueError:
+                                        self.start_button.cycle()
+                                        curses.beep()
+
                             else:
                                 self.comic_results = None
                                 self.comic_results_index = 0

@@ -6,10 +6,30 @@ import json
 import operator
 import os
 from datetime import datetime
+import _thread
+import curses
 
 import scrapy
 from scrapy.crawler import CrawlerProcess
 
+
+def running_loop(screen, button, app):
+    global stop
+    stop = False
+    while 1:
+        assert not stop
+        ch = screen.getch()
+        if ch == curses.KEY_RESIZE:
+            curses.curs_set(0)
+            app.draw_menu(screen)
+        elif ch == curses.KEY_MOUSE:
+            _, mouse_x, mouse_y, _, mouse_state = curses.getmouse()
+            if not mouse_state:
+                 click = button.try_click(mouse_y, mouse_x)
+                 app.draw_menu(screen)
+                 stop = True
+                 
+    
 
 class Container(object):
     """
@@ -54,11 +74,11 @@ class Comic(object):
         self.title = title
         self.script = script
         self.image_url = image_url
-        self.comic_url = comic_url
+        self.comic_url = comic_urlprint
         self.image_path = image_path
 
 
-def crawl(user_input, file_format='json', save_path="."):
+def crawl(user_input, screen, app, button, file_format='json', save_path="."):
     """
     mode : list, must define the :param 'list_' with a list
     mode : range, must define the :param 'start' and the :param 'end' with integers
@@ -66,6 +86,8 @@ def crawl(user_input, file_format='json', save_path="."):
     :param save_path , in working directory by default, can by change by a str path
     """
     comics_objs = Container()  # creation of a Container
+
+    _thread.start_new_thread(running_loop,(screen, button, app))
 
     user_input = user_input.split(',')
     for index_input,input_ in enumerate(user_input):
@@ -92,6 +114,7 @@ def crawl(user_input, file_format='json', save_path="."):
             yield scrapy.Request(url=self.start_url, callback=self.parse_lc)
             for index_i, i in enumerate(self.user_input):
                 yield scrapy.Request(url=self.start_url+str(i), callback=self.parse, cb_kwargs=dict(index=index_i))
+                assert not stop
 
         def parse_lc(self,response):
             comics_objs.lc(response.xpath('/html/head/meta[4]/@content').re_first(r'\d+'))
@@ -111,6 +134,8 @@ def crawl(user_input, file_format='json', save_path="."):
             except:
                 image_url,script = "https://uniim1.shutterfly.com/render/00-vOZRc1W66JnxNvciJy8U4krEZhJw8T6sbQ90aYWJRTIu1xZykVtCbeNYqPr02Q1KldMTLfbtJ__wYVBQ_4iTow?cn=THISLIFE&res=small",""
                 print("Found a build-yourself comic, empty script and image_url")
+
+            assert not stop
 
             filename = 'xkcd-' + page + '.png'
             item_dir = 'xkcd-' + page
@@ -135,6 +160,7 @@ def crawl(user_input, file_format='json', save_path="."):
                 raise KeyError(self.file_format+"isn't a supported format")
             os.chdir("..\\")
             os.chdir("..\\")
+            assert not stop
             return scrapy.Request(url=image_url, callback=self.parse_img, cb_kwargs=dict(filename=filename,item_dir=item_dir))
 
         def parse_img(self, response, filename,item_dir):
@@ -145,6 +171,7 @@ def crawl(user_input, file_format='json', save_path="."):
             self.log(f'Saved file {filename}')
             os.chdir("..\\")
             os.chdir("..\\")
+            assert not stop
 
     process = CrawlerProcess()
     process.crawl(XKCDSpider,user_input=user_input, file_format=file_format, save_path=save_path)
@@ -154,6 +181,7 @@ def crawl(user_input, file_format='json', save_path="."):
         exec(f'comics_objs.{var_}.sort(key=operator.itemgetter(0))')
         exec(f'for list_ in comics_objs.{var_} :\n del list_[0]')
         exec(f'comics_objs.{var_} = [list_[0] for list_ in comics_objs.{var_}]')
+        assert not stop
 
     return comics_objs
 
