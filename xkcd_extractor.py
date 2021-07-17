@@ -34,7 +34,7 @@ class Comic(object):
     """
     Custom object that store the title, scripts and the image_url of a comic
     """
-    def __init__(self, page: int, title: str, script: str, image_url: str, comic_url: str, image_path: str = ""):
+    def __init__(self, page: int, title: str, script: str, image_url: str, comic_url: str, image_path: str):
         self.page = page
         self.title = title
         self.script = script
