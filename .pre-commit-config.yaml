@@ -27,8 +27,6 @@ repos:
     rev: 3.9.2
     hooks:
       - id: flake8
-        args:
-          ['--ignore=S102']
         additional_dependencies:
           - flake8-annotations~=2.0
           - flake8-bandit~=2.1

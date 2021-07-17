@@ -1,6 +1,7 @@
 import csv
 import json
 import os
+import operator
 
 import requests
 from bs4 import BeautifulSoup
@@ -56,7 +57,7 @@ def parse_img(image_url: str, filename: str, item_dir: str) -> None:
 def crawl(user_input: str, file_format: str = 'json', save_path: str = ".") -> Container:
     """
     Mode : list, must define the :param 'list_' with a list
-    
+
     mode : range, must define the :param 'start' and the :param 'end' with integers
 
     :param user_input: the input for the comics to be scrapped
