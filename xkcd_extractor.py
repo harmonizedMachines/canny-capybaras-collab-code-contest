@@ -77,7 +77,6 @@ def req(index, urls,file_format):
         os.makedirs(item_dir)
 
     image_path = os.path.join('output', item_dir, filename)
-    print(image_path)
 
     os.chdir(item_dir)
     if file_format == 'json':
