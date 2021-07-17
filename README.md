@@ -18,7 +18,11 @@
 
 ## How it works?
 + go to field `Comic ID(s):` and enter the number of your comic id's
+  + input format for **one** ID `1000`
+  + input format for more specific ID's `1, 800, 1000`
   + input format for several comic ID's `800-1000`
+  + input format for **one** specific ID and several ID's in a range `1, 800-1000`
+  + input format for several queues of ID's `1-50, 800-1000`
 + to select the file format of the output click on the text behind `File Format:`
   + can change between JSON or CSV
 + click on `START` to start crawling process
