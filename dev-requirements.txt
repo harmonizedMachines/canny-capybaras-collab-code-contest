@@ -14,7 +14,8 @@ flake8-docstrings~=1.5
 flake8-isort~=4.0
 
 # Project packages
-scrapy==2.5.0
+requests~=2.26.0
+beautifulsoup4~=4.9.3
 windows-curses~=2.2
 img2text~=0.0.2
 psutil~=5.8.0
