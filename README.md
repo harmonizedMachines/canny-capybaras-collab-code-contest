@@ -1,14 +1,15 @@
 # XKCD Webscraping TUI
-> A software to scrape comic title, id, url, image url and the alternative text from the website [xkcd](https://xkcd.com/) in form of a Text-based User Inferface (Terminal-based User Interface) (TUI)
+> A software to scrape comic title, id, url, image url and the alternative text from the website [xkcd](https://xkcd.com/) in form of a [TUI](https://en.wikipedia.org/wiki/Text-based_user_interface), Text-/Terminal-based User Interface
 
+![](https://img.shields.io/badge/License-MIT-idk?style=flat&logo=windows-curses&logoColor=white&color=ff00)
 
 ## Tools & Technologies
-![https://www.python.org/](https://img.shields.io/badge/Code-Python-idk?style=flat&logo=python&logoColor=white&color=ff00)
-![https://pypi.org/project/bs4/](https://img.shields.io/badge/Technology-BeautifulSoup-idk?style=flat&logo=scrapy&logoColor=white&color=ff00)
-![https://pypi.org/project/img2text/](https://img.shields.io/badge/Technology-img2text-idk?style=flat&logo=img2text&logoColor=white&color=ff00)
-![https://pypi.org/project/psutil/](https://img.shields.io/badge/Technology-psutil-idk?style=flat&logo=psutil&logoColor=white&color=ff00)
-![](https://img.shields.io/badge/Technology-Curses-idk?style=flat&logo=curses&logoColor=white&color=ff00)
-![https://github.com/git/git-scm.com/blob/main/MIT-LICENSE.txt](https://img.shields.io/badge/License-MIT-idk?style=flat&logo=windows-curses&logoColor=white&color=ff00)
++ Python 3.9
++ [Beautiful Soup 4](https://pypi.org/project/beautifulsoup4/) ~= 4.8.0
++ [psutil](https://pypi.org/project/psutil/) ~= 5.8.0
++ [img2text](https://pypi.org/project/img2text/) ~= 0.0.2
++ [windows-curses](https://pypi.org/project/windows-curses/) ~= 2.2
++ [requests](https://pypi.org/project/requests/) ~= 2.26.0
 
 ## Features
 + scrape comic title, id, url, image url and the alternative text from [xkcd](https://xkcd.com/)
@@ -24,6 +25,7 @@
   + input format for several comic ID's `800-1000`
   + input format for **one** specific ID and several ID's in a range `1, 800-1000`
   + input format for several queues of ID's `1-50, 800-1000`
+  + input can also be `2488-*`, which will start at comic 2488 and finish at the latest comic, or `*`, which will scrape all availible comics
 + to select the file format of the output click on the text behind `File Format:`
   + can change between JSON or CSV
 + click on `START` to start crawling process
@@ -33,6 +35,10 @@
 ![](/images/start_tui.png)
 ![](/images/executed_tui.png)
 ![](/images/ASCII_image_tui.png)
+
+## Other
+
+Some [xkcd](https://xkcd.com) comics are `build-yourself`, so some if the information to be scraped will not be availible, but your output will indicate on whether it is a `build-yourself` comic
 
 ## Installation
 
@@ -52,14 +58,18 @@ Install the required packages
 
 ```bash
   pipenv install -r requirement.txt
-  pipenv install -d dev-requirements.txt
+
+  pipenv install -d dev-requirements.txt  # is not really needed
 ```
 
 Run the project
 
 ```bash
-  pipenv run py <start_file>
+  pipenv run py __main__
 ```
+
+Scraped comics will be placed in a folder within the `output` folder. Folder naming is done according to the comic number
+
 ## Authors
 
 - [@aiyayayaya](https://www.github.com/aiyayayaya)
