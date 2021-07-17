@@ -1,4 +1,4 @@
-# XKCD Websraping TUI 
+# XKCD Webscraping TUI 
 > A software to scrape comic title, id, url, image url and the alternative text from the website [xkcd](https://xkcd.com/) in form of a textuserinterface (TUI) 
 
 
@@ -15,8 +15,8 @@
 + scrape comic title, id, url, image url and the alternative text from [xkcd](https://xkcd.com/)
 + scrape a specific queue with comic id's from [xkcd](https://xkcd.com/) (800-1000)
 + save scraped comic data in a json/csv file
-+ CPU ussage
-+ GPU ussage
++ CPU usage
++ GPU usage
 
 ## How it works?
 + go to field `Comic ID(s):` and enter the number of your comic id's
