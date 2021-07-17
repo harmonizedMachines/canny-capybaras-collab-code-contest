@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 
 
 class Container(object):
+
     """
     Container that contains 3 lists ('comics' for the list of comics that have been crawled,
     'titles' for the list of all comic's titles that have been crawled and
@@ -18,7 +19,8 @@ class Container(object):
         self.titles = []
         self.image_urls = []
 
-    def append(self, comic: list):
+    def append(self, comic: list) -> None:
+
         """
         Append lists with comic's propreties
         :param comic
@@ -30,9 +32,8 @@ class Container(object):
 
 
 class Comic(object):
-    """
-    Custom object that store the title, scripts and the image_url of a comic
-    """
+
+    """Custom object that store the title, scripts and the image_url of a comic"""
 
     def __init__(self, title: str, script: str, image_url: str):
         self.title = title
@@ -40,9 +41,10 @@ class Comic(object):
         self.image_url = image_url
 
 
-def parse_img(image_url, filename, item_dir) -> None:
+def parse_img(image_url: str, filename: str, item_dir: str) -> None:
+
     """
-    save image in the specified path
+    Save image in the specified path
     :param image_url , image url obtained by scrapping
     :param filename , the name of the image file
     :param item_dir , the directory to be saved in
@@ -54,6 +56,7 @@ def parse_img(image_url, filename, item_dir) -> None:
 
 
 def crawl(user_input: str, file_format: str = 'json', save_path: str = ".") -> Container:
+
     """
     mode : list, must define the :param 'list_' with a list
     mode : range, must define the :param 'start' and the :param 'end' with integers
