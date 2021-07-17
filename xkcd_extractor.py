@@ -32,12 +32,15 @@ class Container(object):
 
 
 class Comic(object):
-    """Custom object that store the title, scripts and the image_url of a comic"""
+    """Custom object that store the page number, title, scripts, image_url, comic_url, and the image_path of a comic"""
 
-    def __init__(self, title: str, script: str, image_url: str):
+    def __init__(self, page: int, title: str, script: str, image_url: str, comic_url: str, image_path: str):
+        self.page = page
         self.title = title
         self.script = script
         self.image_url = image_url
+        self.comic_url = comic_url
+        self.image_path = image_path
 
 
 def parse_img(image_url: str, filename: str, item_dir: str) -> None:
@@ -104,13 +107,17 @@ def crawl(user_input: str, file_format: str = 'json', save_path: str = ".") -> C
                                 "00-vOZRc1W66JnxNvciJy8U4krEZhJw8T6sbQ90aYWJRTIu1xZykVtCbeNYqPr02Q1" \
                                 "KldMTLfbtJ__wYVBQ_4iTow?cn=THISLIFE&res=small", ""
             print("Error", ex.__class__, ": Found a special comic, empty script and image_url")
-        # export to file
-        comics_objs.append([index, Comic(title, script, image_url)])
 
+        # export to file
         filename = 'xkcd-' + page + '.png'
         item_dir = 'xkcd-' + page
         if not os.path.exists(item_dir):
             os.makedirs(item_dir)
+
+        image_path = os.path.join('output', item_dir, filename)
+        print(image_path)
+        comics_objs.append([index, Comic(page, title, script, image_url, comic_url, image_path)])
+
         os.chdir(item_dir)
         if file_format == 'json':
             results = {'title': title, 'script': script, 'image_url': image_url, 'comic_url': comic_url}
@@ -131,6 +138,7 @@ def crawl(user_input: str, file_format: str = 'json', save_path: str = ".") -> C
         exec(f'for list_ in comics_objs.{var_} :\n del list_[0]')  # noqa: S102
         exec(f'comics_objs.{var_} = [list_[0] for list_ in comics_objs.{var_}]')  # noqa: S102
 
+    os.chdir("..\\")
     return comics_objs
 
 

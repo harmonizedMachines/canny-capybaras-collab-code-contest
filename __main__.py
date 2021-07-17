@@ -111,9 +111,9 @@ class App():
                         elif button == self.back_button:
                             self.comic_results_index = (self.comic_results_index - 1) % len(self.comic_results.comics)
                         elif button == self.open_folder_button:
-                            image_path = self.comic_results.image_paths[self.comic_results_index]
-                            folder_path = '\\'.join(image_path.split('\\')[:-1])
-                            os.startfile(folder_path)  # noqa: S606 - Temporary
+                            comic = self.comic_results.comics[self.comic_results_index]
+                            folder_path = '\\'.join(comic.image_path.split('\\')[:-1])
+                            os.startfile(folder_path)  # noqa: S606
                     self.draw_menu(screen)
             elif ch == ord('q'):
                 return
@@ -203,11 +203,12 @@ class App():
         output_win.border(0, 0, 0, 0, curses.ACS_SSSB)
 
         if self.comic_results and self.comic_results.comics:
-            page_id = self.comic_results.pages[self.comic_results_index]
-            title = self.comic_results.titles[self.comic_results_index]
-            alt_text = self.comic_results.scripts[self.comic_results_index]
-            comic_url = self.comic_results.comic_urls[self.comic_results_index]
-            image_url = self.comic_results.image_urls[self.comic_results_index]
+            comic = self.comic_results.comics[self.comic_results_index]
+            page_id = comic.page
+            title = comic.title
+            alt_text = comic.script
+            comic_url = comic.comic_url
+            image_url = comic.image_url
             comic_url_text = "Comic URL:"
             image_url_text = "Image URL:"
             output_win.addstr(4, 1, comic_url_text)
@@ -263,7 +264,7 @@ class App():
             )
 
             if show_image_button_text == "Hide Image":
-                image_path = self.comic_results.image_paths[self.comic_results_index]
+                image_path = comic.image_path
                 ascii_img = img2text.img_to_ascii(image_path, width=width - 2, reverse=True)
                 lines = ascii_img.split('\n')
                 for i, line in enumerate(lines):

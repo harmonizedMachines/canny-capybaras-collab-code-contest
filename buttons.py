@@ -140,4 +140,4 @@ class HyperlinkButton(Button):
 
     def on_click(self) -> None:
         """Opens the URL when the button is clicked"""
-        os.startfile(self.url)  # noqa: S606 - Temporary
+        os.startfile(self.url)  # noqa: S606
