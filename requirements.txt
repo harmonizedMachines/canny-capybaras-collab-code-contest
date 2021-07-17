@@ -1,0 +1,6 @@
+# Project packages
+requests~=2.26.0
+beautifulsoup4~=4.8.0
+windows-curses~=2.2
+img2text~=0.0.2
+psutil~=5.8.0
