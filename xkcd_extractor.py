@@ -3,7 +3,7 @@ import os
 from bs4 import BeautifulSoup
 import json
 import csv
-from datetime import datetime
+import operator
 
 class Container(object):
     """
@@ -53,7 +53,6 @@ def crawl(user_input, file_format='json', save_path="."):
         html_text = requests.get('https://xkcd.com/')
         soup = BeautifulSoup(html_text.text,'html.parser')
         lastest_comic = soup.find('meta',property="og:url")["content"].split('.com/')[1][:-1]
-        print(lastest_comic)
         user_input = user_input.replace('*', lastest_comic)
     user_input = user_input.split(',')
     for index_input, input_ in enumerate(user_input):
@@ -63,11 +62,13 @@ def crawl(user_input, file_format='json', save_path="."):
             user_input[index_input:index_input] = str_range
             user_input.remove(input_)
     user_input = [int(input_) for input_ in user_input]
-    comics_objs = []
+    comics_objs = Container()
     os.chdir(save_path)
-    time = datetime.now().strftime("%d_%m_%Y_%H-%M-%S")
-    os.mkdir(time)
-    os.chdir(time)
+    try :
+        os.mkdir('output')
+    except:
+        pass
+    os.chdir('output')
     for index,urls in enumerate(user_input):
         html_text = requests.get('https://xkcd.com/'+str(urls))
         soup = BeautifulSoup(html_text.text,'html.parser')
@@ -114,4 +115,4 @@ def crawl(user_input, file_format='json', save_path="."):
     return comics_objs
 
 if __name__ == "__main__":
-    print(crawl(user_input='1,3,1100-*',file_format="json").titles)
+    print(crawl(user_input='1,3',file_format="json").titles)
