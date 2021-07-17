@@ -1,7 +1,7 @@
 import csv
 import json
-import os
 import operator
+import os
 
 import requests
 from bs4 import BeautifulSoup
