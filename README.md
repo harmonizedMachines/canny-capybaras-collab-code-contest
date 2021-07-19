@@ -36,6 +36,9 @@
 ![](/images/executed_tui.png)
 ![](/images/ASCII_image_tui.png)
 
+## Theme Interpretation (Think Inside the Box)
+Our interpretation of the theme was that "thinking inside the box" should imply that it does not require broad thinking. For example, something that is simple to understand, execute, and obtain the results of. We decided to go for a basic TUI style which is self-contained in a single menu (a box if you will). We also chose xkcd to scrape out of all websites because of [this comic titled "AI-Box Experiment"](https://xkcd.com/1450/).
+
 ## Other
 
 Some [xkcd](https://xkcd.com) comics are `build-yourself`, so some if the information to be scraped will not be availible, but your output will indicate on whether it is a `build-yourself` comic
