@@ -5,7 +5,7 @@ import operator  # noqa: F401
 
 import requests
 from bs4 import BeautifulSoup
-from multiprocessing import Pool,cpu_count
+from multiprocessing import Pool, cpu_count
 
 
 class Container(object):
@@ -19,22 +19,22 @@ class Container(object):
         self.titles = []
         self.image_urls = []
 
-    def append(self, comic: list)-> None:
+    def append(self, comic: list) -> None:
         """
         Append lists with comic's propreties
         :param comic
 
         """
-        self.comics.append([comic[0],comic[1]])
-        self.titles.append([comic[0],comic[1].title])
-        self.image_urls.append([comic[0],comic[1].image_url])
+        self.comics.append([comic[0], comic[1]])
+        self.titles.append([comic[0], comic[1].title])
+        self.image_urls.append([comic[0], comic[1].image_url])
 
 
 class Comic(object):
     """
     Custom object that store the title, scripts and the image_url of a comic
     """
-    def __init__(self, page: int, title: str, script: str, image_url: str, comic_url: str, image_path: str):
+    def __init__(self, page: str, title: str, script: str, image_url: str, comic_url: str, image_path: str):
         self.page = page
         self.title = title
         self.script = script
@@ -44,31 +44,38 @@ class Comic(object):
 
 
 def parse_img(image_url, filename, item_dir) -> None:
-    os.chdir(item_dir)
-    with open(filename, 'wb') as f:
+    with open(os.path.join(item_dir, filename), 'wb') as f:
         f.write(requests.get(image_url).content)
-    os.chdir("..\\")
 
 
-def req(index, urls,file_format):
+def req(index, urls, file_format):
     html_text = requests.get('https://xkcd.com/'+str(urls))
-    soup = BeautifulSoup(html_text.text,'html.parser')
+    soup = BeautifulSoup(html_text.text, 'html.parser')
     page = str(urls)
 
     # extract url
     comic_url = 'https://xkcd.com/'+str(urls)
     # extract title
-    title = soup.find(id="ctitle").text
     try:
-        # extract texts
+        title = soup.find(id="ctitle").text
+    except AttributeError:
+        title = ""
+    try:
         script = soup.find(id="comic").find("img")['title']
+    except (TypeError, AttributeError,KeyError):
+        script = ""
+    try:
         # extract comic
-        image_url = "https:" + soup.find(id="comic").find("img")['src']
-    except Exception as ex:
-        image_url, script = "https://uniim1.shutterfly.com/render/" \
-                            "00-vOZRc1W66JnxNvciJy8U4krEZhJw8T6sbQ90aYWJRTIu1xZykVtCbeNYqPr02Q1" \
-                            "KldMTLfbtJ__wYVBQ_4iTow?cn=THISLIFE&res=small", ""
-        print("Error", ex.__class__, ": Found a special comic, empty script and image_url")
+        if '//imgs.xkcd.com/comics/' in soup.find(id="comic").find("img")['src']:
+            image_url = "https:" + soup.find(id="comic").find("img")['src']
+        else:
+            image_url = "https://uniim1.shutterfly.com/render/" \
+                        "00-vOZRc1W66JnxNvciJy8U4krEZhJw8T6sbQ90aYWJRTIu1xZykVtCbeNYqPr02Q1" \
+                        "KldMTLfbtJ__wYVBQ_4iTow?cn=THISLIFE&res=small"
+    except (TypeError, AttributeError):
+        image_url = "https://uniim1.shutterfly.com/render/" \
+                    "00-vOZRc1W66JnxNvciJy8U4krEZhJw8T6sbQ90aYWJRTIu1xZykVtCbeNYqPr02Q1" \
+                    "KldMTLfbtJ__wYVBQ_4iTow?cn=THISLIFE&res=small"
     # export to file
 
     filename = 'xkcd-' + page + '.png'
@@ -78,34 +85,31 @@ def req(index, urls,file_format):
 
     image_path = os.path.join('output', item_dir, filename)
 
-    os.chdir(item_dir)
     if file_format == 'json':
         results = {'title': title, 'script': script, 'image_url': image_url, 'comic_url': comic_url}
-        with open('xkcd-' + page + '.json', 'w') as f:
+        with open(os.path.join(item_dir, 'xkcd-' + page + '.json'), 'w') as f:
             json.dump(results, f)
     elif file_format == 'csv':
-        with open('xkcd-' + page + '.csv', 'w', newline='') as csvfile:
+        with open(os.path.join(item_dir, 'xkcd-' + page + '.csv'), 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(['title', 'script', 'image_url', 'comic_url'])
             writer.writerow([title, script, image_url, comic_url])
     else:
         raise KeyError(file_format + "isn't a supported format")
-    os.chdir("..\\")
     parse_img(image_url, filename, item_dir)
 
-    return [index, Comic(title, script, image_url, comic_url, image_path)]
+    return [index, Comic(page, title, script, image_url, comic_url, image_path)]
 
 
 def crawl(user_input, file_format='json', save_path="."):
     """
-    mode : list, must define the :param 'list_' with a list
-    mode : range, must define the :param 'start' and the :param 'end' with integers
-    :param file_format , by default 'json' ,can be changed to 'csv'
-    :param save_path , in working directory by default, can by change by a str path
+    :param user_input: string that contains integers, splitted by ',', '-' for a range , and '*' for the lastest comic
+    :param file_format: by default 'json' ,can be changed to 'csv'
+    :param save_path: in working directory by default, can by change by a str path
     """
     html_text = requests.get('https://xkcd.com/')
-    soup = BeautifulSoup(html_text.text,'html.parser')
-    lastest_comic = soup.find('meta',property="og:url")["content"].split('.com/')[1][:-1]
+    soup = BeautifulSoup(html_text.text, 'html.parser')
+    lastest_comic = soup.find('meta', property="og:url")["content"].split('.com/')[1][:-1]
     if '*' in user_input:
         user_input = user_input.replace('*', lastest_comic)
     user_input = user_input.split(',')
@@ -131,11 +135,13 @@ def crawl(user_input, file_format='json', save_path="."):
     comics_objs = Container()
     for comic in results:
         comics_objs.append(comic)
-    for var_ in ['titles','comics','image_urls']:
+    for var_ in ['titles', 'comics', 'image_urls']:
         exec(f'comics_objs.{var_}.sort(key=operator.itemgetter(0))')  # noqa: S102
         exec(f'for list_ in comics_objs.{var_} :\n del list_[0]')  # noqa: S102
         exec(f'comics_objs.{var_} = [list_[0] for list_ in comics_objs.{var_}]')  # noqa: S102
+    os.chdir('..\\')
     return comics_objs
 
+
 if __name__ == "__main__":
-    print(crawl(user_input='1,10-30',file_format="json").titles)
+    print(crawl(user_input='1-*', file_format="json").titles)
