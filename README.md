@@ -24,7 +24,7 @@
   + input format for several comic ID's `800-1000`
   + input format for **one** specific ID and several ID's in a range `1, 800-1000`
   + input format for several queues of ID's `1-50, 800-1000`
-  + input can also be `2488-*`, which will start at comic 2488 and finish at the latest comic, or `*`, which will scrape all availible comics
+  + input can also be `2488-*`, which will start at comic 2488 and finish at the latest comic, or `1-*`, which will scrape all available comics
 + to select the file format of the output click on the text behind `File Format:`
   + can change between JSON or CSV
 + click on `START` to start crawling process
