@@ -86,3 +86,4 @@ Scraped comics will be placed in a folder within the `output` folder. Folder nam
 ## Known Issues
 + Making the window too small results in a crash and resizing it too fast may result in a weird-looking TUI
 + Scraping [comic 404](https://xkcd.com/404) will result in a crash (this includes scraping ranges that include comic 404 such as `1-*` which would scrape all the comics)
++ If you try to scrape a comic that doesn't exist the program will crash
