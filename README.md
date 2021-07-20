@@ -29,6 +29,7 @@
   + can change between JSON or CSV
 + click on `START` to start crawling process
 + click on `Show Image` to show the image in console in ASCII art (picture 2&3)
++ click on 'Open Folder' to open the folder where the scraped comic is located
 + with buttons `Back` & `Next` you can switch between results
 + see the magic
 
