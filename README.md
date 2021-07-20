@@ -82,11 +82,6 @@ Scraped comics will be placed in a folder within the `output` folder. Folder nam
 - [@voidoffi](https://www.github.com/voidoffi)
 - [@marty321](https://www.github.com/marty321)
 
-## Known Issues (that would not be fixed by a rollback)
+## Known Issues
 + Making the window too small results in a crash and resizing it too fast may result in a weird-looking TUI
 + Scraping [comic 404](https://xkcd.com/404) will result in a crash (this includes scraping ranges that include comic 404 such as `1-*` which would scrape all the comics)
-
-## Known Issues (that would be fixed by a rollback)
-+ Clicking "Show Image" crashes the program
-+ Clicking "Open Folder" crashes the program
-+ Scraping multiple times will result in nested output folders
