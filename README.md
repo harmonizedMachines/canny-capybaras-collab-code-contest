@@ -42,7 +42,7 @@ Our interpretation of the theme was that "thinking inside the box" should imply 
 
 ## Other
 
-Some [xkcd](https://xkcd.com) comics are `build-yourself`, so some if the information to be scraped will not be availible, but your output will indicate on whether it is a `build-yourself` comic
+Some [xkcd](https://xkcd.com) comics are `build-yourself`, so some if the information to be scraped will not be available, but your output will indicate on whether it is a `build-yourself` comic
 
 ## Installation
 
